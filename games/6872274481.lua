@@ -23,12 +23,12 @@ local run = function(func, timeout)
 		task.wait(0.2)
 	until tick() - started >= timeout
 
-	warn('[AetherV2] Skipped a BedWars module during startup: '..tostring(lastError))
+	warn('[AetherV3] Skipped a BedWars module during startup: '..tostring(lastError))
 end
 local cloneref = cloneref or function(obj)
 	return obj
 end
-local vapeEvents = setmetatable({
+local aetherEvents = setmetatable({
 	EntityDamageEvent = Instance.new('BindableEvent')
 }, {
 	__index = function(self, index)
@@ -37,7 +37,7 @@ local vapeEvents = setmetatable({
 	end
 })
 shared.bindable = Instance.new('BindableEvent')
-getgenv().vapeEvents = vapeEvents
+getgenv().AetherEvents = aetherEvents
 
 local playersService = cloneref(game:GetService('Players'))
 local replicatedStorage = cloneref(game:GetService('ReplicatedStorage'))
@@ -62,35 +62,35 @@ local gameCamera = workspace.CurrentCamera
 local lplr = playersService.LocalPlayer
 local assetfunction = getcustomasset
 
-local vape = shared.vape
-if vape.Categories and not vape.Categories.Exploits then
-	vape.Categories.Exploits = vape.Categories.Blatant
+local aether = shared.Aether
+if aether.Categories and not aether.Categories.Exploits then
+	aether.Categories.Exploits = aether.Categories.Blatant
 end
 
-if vape.Categories and not vape.Categories.Visuals then
-	vape.Categories.Visuals = vape.Categories.Render
+if aether.Categories and not aether.Categories.Visuals then
+	aether.Categories.Visuals = aether.Categories.Render
 end
-local entitylib = vape.Libraries.entity
-local targetinfo = vape.Libraries.targetinfo
-local sessioninfo = vape.Libraries.sessioninfo
-local uipallet = vape.Libraries.uipallet
-local tween = vape.Libraries.tween
-local color = vape.Libraries.color
-local whitelist = vape.Libraries.whitelist
-local prediction = vape.Libraries.prediction
-local getfontsize = vape.Libraries.getfontsize
-local getcustomasset = vape.Libraries.getcustomasset
+local entitylib = aether.Libraries.entity
+local targetinfo = aether.Libraries.targetinfo
+local sessioninfo = aether.Libraries.sessioninfo
+local uipallet = aether.Libraries.uipallet
+local tween = aether.Libraries.tween
+local color = aether.Libraries.color
+local whitelist = aether.Libraries.whitelist
+local prediction = aether.Libraries.prediction
+local getfontsize = aether.Libraries.getfontsize
+local getcustomasset = aether.Libraries.getcustomasset
 
 local function downloadFile(path, func)
 	if not isfile(path) then
 		local suc, res = pcall(function()
-			return game:HttpGet('https://raw.githubusercontent.com/plutoxqqqq/AetherV2/'..readfile('aetherv2/profiles/commit.txt')..'/'..select(1, path:gsub('aetherv2/', '')), true)
+			return game:HttpGet('https://raw.githubusercontent.com/plutoxqqqq/AetherV3/'..readfile('aetherv3/profiles/commit.txt')..'/'..select(1, path:gsub('aetherv3/', '')), true)
 		end)
 		if not suc or res == '404: Not Found' then
 			error(res)
 		end
 		if path:sub(-4) == '.lua' then
-			res = '--This watermark is used to delete the file if its cached, remove it to make the file persist after vape updates.\n'..res
+			res = '--This watermark is used to delete the file if its cached, remove it to make the file persist after aether updates.\n'..res
 		end
 		writefile(path, res)
 	end
@@ -150,7 +150,7 @@ local bedwars, remotes, sides, oldinvrender, oldSwing = {}, {}, {}
 -- Every kit module registers here instead of into a category tab. On the default GUI this
 -- is the Kits window opened by the friends icon beside the search bar; GUIs that do not
 -- implement that window fall back to the Minigames tab so nothing is lost on them.
-local kits = vape.Categories.Kits or vape.Categories.Minigames
+local kits = aether.Categories.Kits or aether.Categories.Minigames
 
 local function addBlur(parent)
 	local blur = Instance.new('ImageLabel')
@@ -158,7 +158,7 @@ local function addBlur(parent)
 	blur.Size = UDim2.new(1, 89, 1, 52)
 	blur.Position = UDim2.fromOffset(-48, -31)
 	blur.BackgroundTransparency = 1
-	blur.Image = getcustomasset('aetherv2/assets/new/blur.png')
+	blur.Image = getcustomasset('aetherv3/assets/new/blur.png')
 	blur.ScaleType = Enum.ScaleType.Slice
 	blur.SliceCenter = Rect.new(52, 31, 261, 502)
 	blur.Parent = parent
@@ -427,7 +427,7 @@ local function hotbarSwitch(slot)
 			type = 'InventorySelectHotbarSlot',
 			slot = slot
 		})
-		vapeEvents.InventoryChanged.Event:Wait()
+		aetherEvents.InventoryChanged.Event:Wait()
 		return true
 	end
 	return false
@@ -435,10 +435,10 @@ end
 getgenv().hotbarSwitch = hotbarSwitch
 
 local function isFriend(plr, recolor)
-	if vape.Categories.Friends.Options['Use friends'].Enabled then
-		local friend = table.find(vape.Categories.Friends.ListEnabled, plr.Name) and true
+	if aether.Categories.Friends.Options['Use friends'].Enabled then
+		local friend = table.find(aether.Categories.Friends.ListEnabled, plr.Name) and true
 		if recolor then
-			friend = friend and vape.Categories.Friends.Options['Recolor visuals'].Enabled
+			friend = friend and aether.Categories.Friends.Options['Recolor visuals'].Enabled
 		end
 		return friend
 	end
@@ -446,10 +446,10 @@ local function isFriend(plr, recolor)
 end
 
 local function isTarget(plr)
-	return table.find(vape.Categories.Targets.ListEnabled, plr.Name) and true
+	return table.find(aether.Categories.Targets.ListEnabled, plr.Name) and true
 end
 
-local function notif(...) return vape:CreateNotification(...) end
+local function notif(...) return aether:CreateNotification(...) end
 
 -- Picks the first name this build's AnimationType actually defines. Naming a constant directly
 -- and falling through with `or` silently substitutes a completely different animation when the
@@ -774,7 +774,7 @@ run(function()
 					entitylib.isAlive = true
 					entitylib.Events.LocalAdded:Fire(entity)
 					table.insert(entitylib.Connections, char.AttributeChanged:Connect(function(attr)
-						vapeEvents.AttributeChanged:Fire(attr)
+						aetherEvents.AttributeChanged:Fire(attr)
 					end))
 				else
 					entity.Targetable = entitylib.targetCheck(entity)
@@ -881,7 +881,7 @@ run(function()
 		if not select(2, whitelist:get(ent.Player)) then return false end
 		return lplr:GetAttribute('Team') ~= ent.Player:GetAttribute('Team')
 	end
-	vape:Clean(entitylib.Events.LocalAdded:Connect(updateVelocity))
+	aether:Clean(entitylib.Events.LocalAdded:Connect(updateVelocity))
 end)
 entitylib.start()
 
@@ -890,7 +890,7 @@ shared.gg = {}
 run(function()
 	canDebug = not table.find({'Solara', 'Xeno'}, ({identifyexecutor()})[1]) and true or false
 	if not canDebug then
-		local cheatenginelib = loadstring(downloadFile('aetherv2/libraries/cheatenginelib.lua'), 'cheatenginelib')(vape, vapeEvents, entitylib)
+		local cheatenginelib = loadstring(downloadFile('aetherv3/libraries/cheatenginelib.lua'), 'cheatenginelib')(aether, aetherEvents, entitylib)
 		require = function(v)
 			return cheatenginelib[({v:GetFullName():gsub(lplr.Name, 'PlayerTemplate')})[1]]:await()
 		end
@@ -931,7 +931,7 @@ run(function()
 		if not debug.getupvalue(Knit.Start, 1) then
 			-- This executor's debug library cannot read it. Everything that needs it is already
 			-- behind a canDebug check with a fallback, so carry on without rather than hang.
-			warn('[AetherV2] debug.getupvalue is unavailable here - modules that need it are disabled')
+			warn('[AetherV3] debug.getupvalue is unavailable here - modules that need it are disabled')
 			canDebug = false
 		end
 	end
@@ -1156,7 +1156,7 @@ run(function()
 	end
 
 	bedwars.ProjectileLaunchHook = createMethodHook(bedwars.ProjectileController, 'calculateImportantLaunchValues')
-	vape:Clean(function()
+	aether:Clean(function()
 		bedwars.ProjectileLaunchHook:Destroy()
 	end)
 
@@ -1197,7 +1197,7 @@ run(function()
 		WarlockTarget = canDebug and getproto(Knit.Controllers.WarlockStaffController.KnitStart, 2) or function() end
 	}
 
-	local packages = httpService:JSONDecode(downloadFile('aetherv2/profiles/packages.json'))
+	local packages = httpService:JSONDecode(downloadFile('aetherv3/profiles/packages.json'))
 	local function dumpRemote(tab)
 		if not tab then return '' end
 		local ind
@@ -1216,7 +1216,7 @@ run(function()
 			remote = packages.remotes[i]
 		end
 		if remote == '' then
-			notif('AetherV2', 'Failed to grab remote ('..i..')', 10, 'alert')
+			notif('AetherV3', 'Failed to grab remote ('..i..')', 10, 'alert')
 		end
 		remotes[i] = remote
 	end
@@ -1593,11 +1593,11 @@ run(function()
 			store.inventory = newinv
 
 			if newinv ~= oldinv then
-				vapeEvents.InventoryChanged:Fire()
+				aetherEvents.InventoryChanged:Fire()
 			end
 
 			if newinv.inventory.items ~= oldinv.inventory.items then
-				vapeEvents.InventoryAmountChanged:Fire()
+				aetherEvents.InventoryAmountChanged:Fire()
 				-- Rebuild from scratch so on-demand break tools memoised by getBreakTool
 				-- (e.g. the bed's axe) are dropped and re-resolved against the new inventory.
 				store.tools = {sword = getSword()}
@@ -1628,15 +1628,15 @@ run(function()
 	updateStore(bedwars.Store:getState(), {})
 
 	for _, event in {'MatchEndEvent', 'EntityDeathEvent', 'BedwarsBedBreak', 'BalloonPopped', 'AngelProgress', 'GrapplingHookFunctions'} do
-		if not vape.Connections then return end
+		if not aether.Connections then return end
 		bedwars.Client:WaitFor(event):andThen(function(connection)
-			vape:Clean(connection:Connect(function(...)
-				vapeEvents[event]:Fire(...)
+			aether:Clean(connection:Connect(function(...)
+				aetherEvents[event]:Fire(...)
 			end))
 		end)
 	end
 
-	vape:Clean(bedwars.ZapNetworking.EntityDamageEventZap.On(function(...)
+	aether:Clean(bedwars.ZapNetworking.EntityDamageEventZap.On(function(...)
 		local a = {
 			entityInstance = ...,
 			damage = select(2, ...),
@@ -1648,10 +1648,10 @@ run(function()
 			disableDamageHighlight = select(13, ...)
 		}
 		shared.bindable:Fire(a)
-		vapeEvents.EntityDamageEvent:Fire(a)
+		aetherEvents.EntityDamageEvent:Fire(a)
 	end))
 
-	vape:Clean(workspace.ChildAdded:Connect(function(projectile)
+	aether:Clean(workspace.ChildAdded:Connect(function(projectile)
 		task.delay(0, function()
 			if projectile and projectile.Parent and entitylib.isAlive and projectile:GetAttribute('ProjectileShooter') == lplr.UserId then
 				table.insert(store.selfProjectiles, projectile)
@@ -1666,7 +1666,7 @@ run(function()
 	end))
 
 	for _, event in {'BreakBlockEvent'} do
-		vape:Clean(bedwars.ZapNetworking[event..'Zap'].On(function(...)
+		aether:Clean(bedwars.ZapNetworking[event..'Zap'].On(function(...)
 			local data = {
 				blockRef = {
 					blockPosition = ...,
@@ -1680,12 +1680,12 @@ run(function()
 					cache[i] = nil
 				end
 			end
-			vapeEvents[event]:Fire(data)
+			aetherEvents[event]:Fire(data)
 		end))
 	end
 
-	store.blocks = collection('block', vape)
-	store.shop = collection({'BedwarsItemShop', 'TeamUpgradeShopkeeper'}, vape, function(tab, obj)
+	store.blocks = collection('block', aether)
+	store.shop = collection({'BedwarsItemShop', 'TeamUpgradeShopkeeper'}, aether, function(tab, obj)
 		table.insert(tab, {
 			Id = obj.Name,
 			RootPart = obj,
@@ -1693,7 +1693,7 @@ run(function()
 			Upgrades = obj:HasTag('TeamUpgradeShopkeeper')
 		})
 	end)
-	store.enchant = collection({'enchant-table', 'broken-enchant-table'}, vape, nil, function(tab, obj, tag)
+	store.enchant = collection({'enchant-table', 'broken-enchant-table'}, aether, nil, function(tab, obj, tag)
 		if obj:HasTag('enchant-table') and tag == 'broken-enchant-table' then return end
 		obj = table.find(tab, obj)
 		if obj then
@@ -1727,8 +1727,8 @@ run(function()
 
 	task.spawn(function()
 		pcall(function()
-			repeat task.wait() until store.matchState ~= 0 or vape.Loaded == nil
-			if vape.Loaded == nil then return end
+			repeat task.wait() until store.matchState ~= 0 or aether.Loaded == nil
+			if aether.Loaded == nil then return end
 			store.map = waitForChildYield(workspace, 9e9, 'Map', 'Worlds'):GetChildren()[1]
 			mapname = store.map.Name
 			mapname = string.gsub(string.split(mapname, '_')[2] or mapname, '-', '') or 'Blank'
@@ -1744,7 +1744,7 @@ run(function()
 				blockRay.FilterDescendantsInstances = {store.map}
 				blockRay.RespectCanCollide = true
 				store.blockRaycast = blockRay
-				vape:Clean(store.map.Blocks.ChildAdded:Connect(function(v) -- bedwars game is so bad bro 😭 how did you even break this event
+				aether:Clean(store.map.Blocks.ChildAdded:Connect(function(v) -- bedwars game is so bad bro 😭 how did you even break this event
 					task.delay(0, function()
 						if v:GetAttribute('Block') and (v:GetAttribute('PlacedByUserId') or 0) ~= 0 then
 							local data = {
@@ -1760,7 +1760,7 @@ run(function()
 									cache[i] = nil
 								end
 							end
-							vapeEvents.PlaceBlockEvent:Fire(data)
+							aetherEvents.PlaceBlockEvent:Fire(data)
 						end
 					end)
 				end))
@@ -1768,19 +1768,19 @@ run(function()
 		end)
 	end)
 
-	vape:Clean(vapeEvents.BedwarsBedBreak.Event:Connect(function(bedTable)
+	aether:Clean(aetherEvents.BedwarsBedBreak.Event:Connect(function(bedTable)
 		if bedTable.player and bedTable.player.UserId == lplr.UserId then
 			beds:Increment()
 		end
 	end))
 
-	vape:Clean(vapeEvents.MatchEndEvent.Event:Connect(function(winTable)
+	aether:Clean(aetherEvents.MatchEndEvent.Event:Connect(function(winTable)
 		if (bedwars.Store:getState().Game.myTeam or {}).id == winTable.winningTeamId or lplr.Neutral then
 			wins:Increment()
 		end
 	end))
 
-	vape:Clean(vapeEvents.EntityDeathEvent.Event:Connect(function(deathTable)
+	aether:Clean(aetherEvents.EntityDeathEvent.Event:Connect(function(deathTable)
 		local killer = playersService:GetPlayerFromCharacter(deathTable.fromEntity)
 		local killed = playersService:GetPlayerFromCharacter(deathTable.entityInstance)
 		if not killed or not killer then return end
@@ -1809,7 +1809,7 @@ run(function()
 				end
 			end
 			task.wait()
-		until vape.Loaded == nil
+		until aether.Loaded == nil
 	end)
 
 	pcall(function()
@@ -1834,7 +1834,7 @@ run(function()
 			task.spawn(function()
 				repeat
 					task.wait(0.1)
-				until vape.Loaded == nil or bedwars.AppController:isAppOpen('BedwarsItemShopApp')
+				until aether.Loaded == nil or bedwars.AppController:isAppOpen('BedwarsItemShopApp')
 
 				bedwars.Shop = require(replicatedStorage.TS.games.bedwars.shop['bedwars-shop']).BedwarsShop
 				pcall(function()
@@ -1845,12 +1845,12 @@ run(function()
 		end
 	end)
 
-	vape:Clean(function()
+	aether:Clean(function()
 		Client.Get = OldGet
 		bedwars.BlockController.isBlockBreakable = OldBreak
 		store.blockPlacer:disable()
 		shared.bindable:Destroy()
-		for _, v in vapeEvents do
+		for _, v in aetherEvents do
 			v:Destroy()
 		end
 		for _, v in cache do
@@ -1858,7 +1858,7 @@ run(function()
 			table.clear(v)
 		end
 		table.clear(store.blockPlacer)
-		table.clear(vapeEvents)
+		table.clear(aetherEvents)
 		table.clear(bedwars)
 		table.clear(store)
 		table.clear(cache)
@@ -1870,7 +1870,7 @@ run(function()
 end, 20)
 
 for _, v in {'AntiRagdoll', 'TriggerBot', 'SilentAim', 'AutoRejoin', 'Rejoin', 'Disabler', 'Timer', 'ServerHop', 'MouseTP', 'MurderMystery'} do
-	vape:Remove(v)
+	aether:Remove(v)
 end
 
 local AntiFallDirection
@@ -1881,7 +1881,7 @@ local LongJump
 -- maintaining a second, inevitably stale list of tool activation rules. (Extender used to be
 -- its main consumer; it now hooks the four kit controllers directly.)
 local longJumpActivation = Instance.new('BindableEvent')
-vape:Clean(longJumpActivation)
+aether:Clean(longJumpActivation)
 local Attacking
 
 --[[
@@ -2009,7 +2009,7 @@ run(function()
 	return lasttarget
     end
 
-    AimAssist = vape.Categories.Combat:CreateModule({
+    AimAssist = aether.Categories.Combat:CreateModule({
 	Name = 'AimAssist',
 	Function = function(callback)
 		if callback then
@@ -2183,7 +2183,7 @@ run(function()
 	end)
     end
 
-    AutoClicker = vape.Categories.Combat:CreateModule({
+    AutoClicker = aether.Categories.Combat:CreateModule({
 	Name = 'AutoClicker',
 	Function = function(callback)
 		if callback then
@@ -2308,7 +2308,7 @@ run(function()
 
     local rayCheck = RaycastParams.new()
 
-    BowAssist = vape.Categories.Combat:CreateModule({
+    BowAssist = aether.Categories.Combat:CreateModule({
 	Name = 'BowAssist',
 	Function = function(callback)
 		if callback then
@@ -2440,7 +2440,7 @@ end)
 run(function()
     local old
 
-    vape.Categories.Combat:CreateModule({
+    aether.Categories.Combat:CreateModule({
         Name = 'NoClickDelay',
         Function = function(callback)
             if callback then
@@ -2469,7 +2469,7 @@ run(function()
 
 		local old
 
-		Reach = vape.Categories.Combat:CreateModule({
+		Reach = aether.Categories.Combat:CreateModule({
 			Name = 'Reach',
 			Tooltip = 'Allows you to place, attack, and break further',
 			Function = function(callback)
@@ -2568,11 +2568,11 @@ run(function()
 	local rayParams = RaycastParams.new()
 	rayParams.RespectCanCollide = true
 
-	Reach = vape.Categories.Combat:CreateModule({
+	Reach = aether.Categories.Combat:CreateModule({
 		Name = 'Reach',
 		Function = function(callback)
 			if callback then
-				Reach:Clean(vapeEvents.CEAttacked.Event:Connect(function()
+				Reach:Clean(aetherEvents.CEAttacked.Event:Connect(function()
 					local doAttack
 					if not bedwars.AppController:isLayerOpen(bedwars.UILayers.MAIN) then
 						if
@@ -2721,7 +2721,7 @@ run(function()
         end)
     end
     
-    ShopQuickBuy = vape.Categories.Combat:CreateModule({
+    ShopQuickBuy = aether.Categories.Combat:CreateModule({
         Name = 'ShopClicker',
         Function = function(callback)
             if callback then
@@ -2906,9 +2906,9 @@ run(function()
     box.Size = Vector3.new(3, 5, 3)
     box.CFrame = CFrame.new(0, -0.5, 0)
     box.ZIndex = 0
-    box.Parent = vape.gui
+    box.Parent = aether.gui
 
-    SilentAura = vape.Categories.Combat:CreateModule({
+    SilentAura = aether.Categories.Combat:CreateModule({
         Name = 'SilentAura',
         Function = function(callback)
             if callback then
@@ -3109,7 +3109,7 @@ run(function()
     LegitAura = SilentAura:CreateToggle({Name = 'Swing only'})
     SilentAim = SilentAura:CreateToggle({
         Name = 'Silent Aim',
-        Tooltip = 'Uses catvape\'s aiming technology to silently aim while looking legit',
+        Tooltip = 'Uses cataether\'s aiming technology to silently aim while looking legit',
         Default = true,
         Function = function(callback)
             Area.Object.Visible = not callback
@@ -3147,7 +3147,7 @@ run(function()
     local Sprint
     local old
 
-    Sprint = vape.Categories.Combat:CreateModule({
+    Sprint = aether.Categories.Combat:CreateModule({
         Name = 'Sprint',
         Function = function(callback)
             if callback then
@@ -3281,7 +3281,7 @@ run(function()
         return success
     end
 
-    TriggerBot = vape.Categories.Combat:CreateModule({
+    TriggerBot = aether.Categories.Combat:CreateModule({
         Name = 'TriggerBot',
         Function = function(callback)
             if callback then
@@ -3407,7 +3407,7 @@ run(function()
         return Vector3.new(rootPosition.X - redirected.X * 100, sourcePosition.Y, rootPosition.Z - redirected.Z * 100)
     end
 
-    Velocity = vape.Categories.Combat:CreateModule({
+    Velocity = aether.Categories.Combat:CreateModule({
         Name = 'Velocity',
         Function = function(callback)
             if callback then
@@ -3514,8 +3514,8 @@ run(function()
     -- character's velocity while they run, and both the old clutch and the old Normal mode used to
     -- yank against them.
     local function beingCarried()
-        local flyModule = Fly or vape.Modules.Fly
-        local longJumpModule = LongJump or vape.Modules.LongJump
+        local flyModule = Fly or aether.Modules.Fly
+        local longJumpModule = LongJump or aether.Modules.LongJump
         if flyModule and flyModule.Enabled then return true end
         if longJumpModule and longJumpModule.Enabled then return true end
         if InfiniteFly and InfiniteFly.Enabled then return true end
@@ -3735,7 +3735,7 @@ run(function()
     local flyOwned, landSince = false, 0
 
     local function flyModule()
-        return Fly or vape.Modules.Fly
+        return Fly or aether.Modules.Fly
     end
 
     local function stopFly(force)
@@ -3804,7 +3804,7 @@ run(function()
         end
     end
 
-    AntiFall = vape.Categories.Blatant:CreateModule({
+    AntiFall = aether.Categories.Blatant:CreateModule({
         Name = 'AntiVoid',
         Function = function(callback)
             if callback then
@@ -4531,7 +4531,7 @@ run(function()
 		end
 	end
 
-	NoFall = vape.Categories.Blatant:CreateModule({
+	NoFall = aether.Categories.Blatant:CreateModule({
 		Name = 'NoFallDamage',
 		Function = function(callback)
 			if callback then
@@ -4917,7 +4917,7 @@ run(function()
         return true
     end
 
-    AntiDeath = vape.Categories.Blatant:CreateModule({
+    AntiDeath = aether.Categories.Blatant:CreateModule({
 	Name = 'AntiDeath',
 	Tooltip = 'Dodges melee and projectiles "blatantly"',
 	Function = function(call)
@@ -5085,7 +5085,7 @@ end)
 run(function()
     local ChillLighting
     local oldAmbient, oldOutdoor
-    ChillLighting = vape.Categories.Visuals:CreateModule({
+    ChillLighting = aether.Categories.Visuals:CreateModule({
         Name = 'ChillLighting',
         Function = function(callback)
             if callback then
@@ -5396,7 +5396,7 @@ run(function()
         end
     end
 
-    Water = (vape.Categories.Visuals or vape.Categories.Render):CreateModule({
+    Water = (aether.Categories.Visuals or aether.Categories.Render):CreateModule({
         Name = 'Water',
         Function = function(callback)
             if callback then
@@ -5563,7 +5563,7 @@ run(function()
         moved = nil
     end
 
-    ChatPosition = vape.Categories.Render:CreateModule({
+    ChatPosition = aether.Categories.Render:CreateModule({
         Name = 'ChatPosition',
         Function = function(callback)
             if callback then
@@ -5606,7 +5606,7 @@ end)
 run(function()
     local BoostAirJump
     local Boost
-    BoostAirJump = vape.Categories.Blatant:CreateModule({
+    BoostAirJump = aether.Categories.Blatant:CreateModule({
         Name = 'BoostAirJump',
         Function = function(callback)
             if callback then
@@ -5651,7 +5651,7 @@ run(function()
         old_hook, old_enablePhysics, old_deflate = nil, nil, nil
     end
 
-    BalloonDisabler = vape.Categories.Exploits:CreateModule({
+    BalloonDisabler = aether.Categories.Exploits:CreateModule({
         Name = 'BalloonDisabler',
         Function = function(callback)
             if callback then
@@ -5744,7 +5744,7 @@ run(function()
         return nil
     end
 
-    AutoBuildUp = vape.Categories.Blatant:CreateModule({
+    AutoBuildUp = aether.Categories.Blatant:CreateModule({
         Name = 'AutoBuildUp',
         Function = function(callback)
             if callback then
@@ -5839,7 +5839,7 @@ run(function()
     voidRay.RespectCanCollide = true
     voidRay.FilterType = Enum.RaycastFilterType.Exclude
 
-    AntiLagback = vape.Categories.Exploits:CreateModule({
+    AntiLagback = aether.Categories.Exploits:CreateModule({
         Name = 'AntiLagback',
         Function = function(callback)
             if callback then
@@ -6311,7 +6311,7 @@ run(function()
         return CFrame.new(clone.Position + Vector3.new(0, off * dir, 0)) * CFrame.Angles(math.rad(90), 0, 0)
     end
 
-    GodMode = vape.Categories.Exploits:CreateModule({
+    GodMode = aether.Categories.Exploits:CreateModule({
         Name = 'GodMode',
         Function = function(callback)
             if callback then
@@ -6658,7 +6658,7 @@ run(function()
         end
     end
 
-    ProjectileDodger = vape.Categories.Blatant:CreateModule({
+    ProjectileDodger = aether.Categories.Blatant:CreateModule({
         Name = 'ProjectileDodger',
         Function = function(callback)
             if callback then
@@ -6863,7 +6863,7 @@ run(function()
         return position, targetPosition
     end
 
-    TPAura = vape.Categories.Blatant:CreateModule({
+    TPAura = aether.Categories.Blatant:CreateModule({
         Name = 'TPAura',
         Function = function(callback)
             if callback then
@@ -7114,11 +7114,11 @@ run(function()
     local DamageBoost
     local stack
 
-    DamageBoost = vape.Categories.Blatant:CreateModule({
+    DamageBoost = aether.Categories.Blatant:CreateModule({
 	Name = 'DamageBoost',
 	Function = function(callback)
 		if callback then
-			DamageBoost:Clean(vapeEvents.EntityDamageEvent.Event:Connect(function(damageTable)
+			DamageBoost:Clean(aetherEvents.EntityDamageEvent.Event:Connect(function(damageTable)
 				if entitylib.isAlive and tick() > (stack or 0) and damageTable.entityInstance == lplr.Character and not LongJump.Enabled then
 					local horizontal = (damageTable.knockbackMultiplier and damageTable.knockbackMultiplier.horizontal or 0)
 					knockbackSpeed = bedwars.KnockbackUtil.calculateKnockbackVelocity(Vector3.one, 1, {
@@ -7152,7 +7152,7 @@ run(function()
 	return nil
     end
 
-    FastBreak = vape.Categories.Blatant:CreateModule({
+    FastBreak = aether.Categories.Blatant:CreateModule({
 	Name = 'FastBreak',
 	Function = function(callback)
 		if callback then
@@ -7333,7 +7333,7 @@ run(function()
     rayCheck.RespectCanCollide = true
     local up, down, old = 0, 0
 
-    Fly = vape.Categories.Blatant:CreateModule({
+    Fly = aether.Categories.Blatant:CreateModule({
         Name = 'Fly',
         Function = function(callback)
             frictionTable.Fly = callback or nil
@@ -7346,7 +7346,7 @@ run(function()
                 if lplr.Character and (lplr.Character:GetAttribute('InflatedBalloons') or 0) == 0 and getItem('balloon') then
                     bedwars.BalloonController:inflateBalloon()
                 end
-                Fly:Clean(vapeEvents.AttributeChanged.Event:Connect(function(changed)
+                Fly:Clean(aetherEvents.AttributeChanged.Event:Connect(function(changed)
                     if changed == 'InflatedBalloons' and (lplr.Character:GetAttribute('InflatedBalloons') or 0) == 0 and getItem('balloon') then
                         bedwars.BalloonController:inflateBalloon()
                     end
@@ -7512,7 +7512,7 @@ run(function()
         end)
         if not ok and not flagsBroken then
             flagsBroken = true
-            warn('[AetherV2] InfiniteFly: this executor has no usable setfflag, so the lag window cannot be opened')
+            warn('[AetherV3] InfiniteFly: this executor has no usable setfflag, so the lag window cannot be opened')
         end
     end
 
@@ -7557,7 +7557,7 @@ run(function()
         setLag(false)
     end
 
-    InfiniteFly = vape.Categories.Blatant:CreateModule({
+    InfiniteFly = aether.Categories.Blatant:CreateModule({
         Name = 'InfiniteFly',
         Function = function(callback)
             if callback then
@@ -7575,7 +7575,7 @@ run(function()
                             local ok, err = pcall(cycle)
                             if not ok then
                                 setLag(false)
-                                warn('[AetherV2] InfiniteFly: '..tostring(err))
+                                warn('[AetherV3] InfiniteFly: '..tostring(err))
                             end
                         end
                     end
@@ -7634,7 +7634,7 @@ run(function()
         end
     end
 
-    HitBoxes = vape.Categories.Blatant:CreateModule({
+    HitBoxes = aether.Categories.Blatant:CreateModule({
         Name = 'HitBoxes',
         Function = function(callback)
             if callback then
@@ -7728,7 +7728,7 @@ run(function()
         return
     end
 
-    InstantKill = vape.Categories.Blatant:CreateModule({
+    InstantKill = aether.Categories.Blatant:CreateModule({
         Name = 'InstantKill',
         Function = function(callback)
             if callback then
@@ -7815,7 +7815,7 @@ run(function()
 end)
 
 run(function()
-    vape.Categories.Blatant:CreateModule({
+    aether.Categories.Blatant:CreateModule({
         Name = 'KeepSprint',
         Function = function(callback)
             debug.setconstant(bedwars.SprintController.startSprinting, 5, callback and 'blockSprinting' or 'blockSprint')
@@ -7856,7 +7856,7 @@ run(function()
     local TargetSkilled
     local AttackMode
 	local Particles, Boxes = {}, {}
-    local anims, AnimDelay, AnimTween, armC0 = vape.Libraries.auraanims, tick()
+    local anims, AnimDelay, AnimTween, armC0 = aether.Libraries.auraanims, tick()
 	local AttackRemote = {FireServer = function() end}
     task.spawn(function()
 		AttackRemote = bedwars.Client:Get(remotes.AttackEntity).instance
@@ -7990,7 +7990,7 @@ run(function()
 		return pos
 	end
 
-    Killaura = vape.Categories.Blatant:CreateModule({
+    Killaura = aether.Categories.Blatant:CreateModule({
         Name = 'Killaura',
         Function = function(callback)
             if callback then
@@ -8128,7 +8128,7 @@ run(function()
                                             bedwars.ScytheController:playLocalAnimation()
                                         end
 
-                                        if vape.ThreadFix then
+                                        if aether.ThreadFix then
                                             setthreadidentity(8)
                                         end
                                     end
@@ -8287,7 +8287,7 @@ run(function()
     if TargetSkilled.Object then
         TargetSkilled.Object.Visible = analyserReady()
     end
-    vape:Clean(vapeEvents.EntityAnalyserState.Event:Connect(function(enabled)
+    aether:Clean(aetherEvents.EntityAnalyserState.Event:Connect(function(enabled)
         if TargetSkilled.Object then
             TargetSkilled.Object.Visible = enabled and true or false
         end
@@ -8309,7 +8309,7 @@ run(function()
                     box.Size = Vector3.new(3, 5, 3)
                     box.CFrame = CFrame.new(0, -0.5, 0)
                     box.ZIndex = 0
-                    box.Parent = vape.gui
+                    box.Parent = aether.gui
                     Boxes[i] = box
                 end
             else
@@ -8553,7 +8553,7 @@ run(function()
             end)
         end,
         cat = function(_, _, dir)
-            LongJump:Clean(vapeEvents.CatPounce.Event:Connect(function()
+            LongJump:Clean(aetherEvents.CatPounce.Event:Connect(function()
                 JumpSpeed = 4 * Value.Value
                 JumpTick = tick() + 2.5
                 Direction = Vector3.new(dir.X, 0, dir.Z).Unit
@@ -8569,7 +8569,7 @@ run(function()
                 local original = controller.leap
                 local hook
                 hook = function(...)
-                    vapeEvents.CatPounce:Fire()
+                    aetherEvents.CatPounce:Fire()
                     return original(...)
                 end
                 controller.leap = hook
@@ -8638,7 +8638,7 @@ run(function()
     LongJumpMethods.siege_tnt = LongJumpMethods.tnt
     LongJumpMethods.pirate_gunpowder_barrel = LongJumpMethods.tnt
 
-    LongJump = vape.Categories.Blatant:CreateModule({
+    LongJump = aether.Categories.Blatant:CreateModule({
         Name = 'LongJump',
         Function = function(callback)
             frictionTable.LongJump = callback or nil
@@ -8653,7 +8653,7 @@ run(function()
                     notif('LongJump', 'Hold a long-jump item to use it (Limit to items is on).', 4)
                     return task.spawn(function() if LongJump.Enabled then LongJump:Toggle() end end)
                 end
-                LongJump:Clean(vapeEvents.EntityDamageEvent.Event:Connect(function(damageTable)
+                LongJump:Clean(aetherEvents.EntityDamageEvent.Event:Connect(function(damageTable)
                     -- Limit to items: the knockback (Heatseeker) boost isn't item-driven, so skip it.
                     if LimitItems and LimitItems.Enabled then return end
                     if damageTable.entityInstance == lplr.Character and damageTable.fromEntity == lplr.Character and (not damageTable.knockbackMultiplier or not damageTable.knockbackMultiplier.disabled) then
@@ -8672,7 +8672,7 @@ run(function()
                         end
                     end
                 end))
-                LongJump:Clean(vapeEvents.GrapplingHookFunctions.Event:Connect(function(dataTable)
+                LongJump:Clean(aetherEvents.GrapplingHookFunctions.Event:Connect(function(dataTable)
                     if dataTable.hookFunction == 'PLAYER_IN_TRANSIT' then
                         local vec = entitylib.character.RootPart.CFrame.LookVector
                         JumpSpeed = 2.5 * Value.Value
@@ -8794,7 +8794,7 @@ run(function()
         end
     end
 
-    LongJumpBypass = vape.Categories.Exploits:CreateModule({
+    LongJumpBypass = aether.Categories.Exploits:CreateModule({
         Name = 'LongJumpBypass',
         Function = function(callback)
             if callback then
@@ -9168,7 +9168,7 @@ run(function()
 					root.Velocity = Vector3.zero
 					root.CFrame = CFrame.new(localPosition)
 
-					MouseTP:Clean(vapeEvents.EntityDamageEvent.Event:Connect(function(damageTable)
+					MouseTP:Clean(aetherEvents.EntityDamageEvent.Event:Connect(function(damageTable)
 						if damageTable.entityInstance == lplr.Character and damageTable.fromEntity == lplr.Character and (not damageTable.knockbackMultiplier or not damageTable.knockbackMultiplier.disabled) then
 							local knockbackBoost = bedwars.KnockbackUtil.calculateKnockbackVelocity(Vector3.one, 1, {
 								vertical = 0,
@@ -9214,7 +9214,7 @@ run(function()
 	Kits = function() end
     }
 
-    MouseTP = vape.Categories.Blatant:CreateModule({
+    MouseTP = aether.Categories.Blatant:CreateModule({
 	Name = 'MouseTP',
 	Function = function(callback)
 		if callback then
@@ -9267,7 +9267,7 @@ end)
 run(function()
     local old
 
-    vape.Categories.Blatant:CreateModule({
+    aether.Categories.Blatant:CreateModule({
         Name = 'NoSlowdown',
         Function = function(callback)
             local modifier = bedwars.SprintController:getMovementStatusModifier()
@@ -9346,7 +9346,7 @@ run(function()
                                         starting = true,
                                     })
                                     bedwars.Client:Get('OwlFireProjectile'):SendToServer({
-                                        ProjectileRefId = vape.Libraries.string:GenerateString(8),
+                                        ProjectileRefId = aether.Libraries.string:GenerateString(8),
                                         direction = dir,
                                         fromPosition = origin,
                                         initialVelocity = dir,
@@ -9390,7 +9390,7 @@ run(function()
     local rayCheck = RaycastParams.new()
     rayCheck.FilterType = Enum.RaycastFilterType.Exclude
 
-    PlayerAttach = vape.Categories.Blatant:CreateModule({
+    PlayerAttach = aether.Categories.Blatant:CreateModule({
         Name = 'PlayerAttach',
         Tooltip = 'Attachs you to the nearest target',
         Function = function(call)
@@ -9494,7 +9494,7 @@ run(function()
     end
 
     local ProjectileAimbot
-    ProjectileAimbot = vape.Categories.Blatant:CreateModule({
+    ProjectileAimbot = aether.Categories.Blatant:CreateModule({
 	Name = 'ProjectileAimbot',
 	Disabled = not canDebug,
 	Function = function(callback)
@@ -9790,7 +9790,7 @@ run(function()
 		return CFrame.lookAt(origin, calc).LookVector * speed
 	end
 
-	SilentAim = vape.Categories.Combat:CreateModule({
+	SilentAim = aether.Categories.Combat:CreateModule({
 		Name = 'SilentAim',
 		Function = function(callback)
 			-- Installed once and left in place: a metamethod hook cannot be lifted
@@ -9913,7 +9913,7 @@ run(function()
         return items
     end
 
-    ProjectileAura = vape.Categories.Blatant:CreateModule({
+    ProjectileAura = aether.Categories.Blatant:CreateModule({
         Name = 'ProjectileAura',
         Function = function(callback)
             if callback then
@@ -10019,7 +10019,7 @@ run(function()
     local rayCheck = RaycastParams.new()
     rayCheck.RespectCanCollide = true
 
-    Speed = vape.Categories.Blatant:CreateModule({
+    Speed = aether.Categories.Blatant:CreateModule({
         Name = 'Speed',
         Function = function(callback)
             frictionTable.Speed = callback or nil
@@ -10139,7 +10139,7 @@ run(function()
     local climbAnimation = Instance.new('Animation')
     climbAnimation.AnimationId = 'rbxassetid://11344417710'
 
-    Spider = vape.Categories.Blatant:CreateModule({
+    Spider = aether.Categories.Blatant:CreateModule({
 	Name = 'Spider',
 	Function = function(callback)
 		if callback then
@@ -10188,7 +10188,7 @@ run(function()
 
                         Active = ray
                         if Active and ray.Normal.Y == 0 and not stop then
-                            if not (vape.Modules.Phase and vape.Modules.Phase.Enabled) or not SpiderShift then
+                            if not (aether.Modules.Phase and aether.Modules.Phase.Enabled) or not SpiderShift then
                                 if Animation.Enabled then
                                     entitylib.character.Humanoid:ChangeState(Enum.HumanoidStateType.Climbing)
                                 end
@@ -10429,7 +10429,7 @@ run(function()
         return nil
     end
 
-    ArmorHighlight = vape.Categories.Render:CreateModule({
+    ArmorHighlight = aether.Categories.Render:CreateModule({
         Name = 'ArmorHighlight',
         Function = function(call)
             if call then
@@ -10657,7 +10657,7 @@ run(function()
     local BedESP
     local Reference = {}
     local Folder = Instance.new('Folder')
-    Folder.Parent = vape.gui
+    Folder.Parent = aether.gui
 
     local function Added(bed)
 	if not BedESP.Enabled then
@@ -10693,7 +10693,7 @@ run(function()
 	table.clear(parts)
     end
 
-    BedESP = vape.Categories.Render:CreateModule({
+    BedESP = aether.Categories.Render:CreateModule({
 	Name = 'BedESP',
 	Function = function(callback)
 		if callback then
@@ -10725,7 +10725,7 @@ run(function()
     local Scale
 
     local Folder = Instance.new('Folder')
-    Folder.Parent = vape.gui
+    Folder.Parent = aether.gui
 
     local Reference, Strings = {}, {}
     local Updates = {}
@@ -10771,7 +10771,7 @@ run(function()
 	end
     end
 
-    HiveESP = vape.Categories.Render:CreateModule({
+    HiveESP = aether.Categories.Render:CreateModule({
 	Name = 'BeehiveESP',
 	Function = function(call)
 		if call then
@@ -10942,7 +10942,7 @@ run(function()
 	old2 = nil
     end
 
-    CustomTags = vape.Categories.Render:CreateModule({
+    CustomTags = aether.Categories.Render:CreateModule({
 	Name = 'CustomTags',
 	Function = function(callback)
 		if callback then
@@ -10981,7 +10981,7 @@ run(function()
     local Whitelisted = { ListEnabled = {}, Object = nil }
 
     local Folder = Instance.new('Folder')
-    Folder.Parent = vape.gui
+    Folder.Parent = aether.gui
 
     local Reference, Strings, Cooldown = {}, {}, {}
     local Updates = {}
@@ -11067,7 +11067,7 @@ run(function()
 	end
     end
 
-    GeneratorESP = vape.Categories.Render:CreateModule({
+    GeneratorESP = aether.Categories.Render:CreateModule({
 	Name = 'GeneratorESP',
 	Function = function(call)
 		if call then
@@ -11149,7 +11149,7 @@ end)
 run(function()
     local Health
 
-    Health = vape.Categories.Render:CreateModule({
+    Health = aether.Categories.Render:CreateModule({
 	Name = 'Health',
 	Function = function(callback)
 		if callback then
@@ -11162,9 +11162,9 @@ run(function()
 			label.TextColor3 = entitylib.isAlive and Color3.fromHSV((lplr.Character:GetAttribute('Health') / lplr.Character:GetAttribute('MaxHealth')) / 2.8, 0.86, 1) or Color3.new()
 			label.TextSize = 18
 			label.Font = Enum.Font.Arial
-			label.Parent = vape.gui
+			label.Parent = aether.gui
 			Health:Clean(label)
-			Health:Clean(vapeEvents.AttributeChanged.Event:Connect(function()
+			Health:Clean(aetherEvents.AttributeChanged.Event:Connect(function()
 				label.Text = entitylib.isAlive and math.round(lplr.Character:GetAttribute('Health')) .. ' ❤️' or ''
 				label.TextColor3 = entitylib.isAlive and Color3.fromHSV((lplr.Character:GetAttribute('Health') / lplr.Character:GetAttribute('MaxHealth')) / 2.8, 0.86, 1) or Color3.new()
 			end))
@@ -11183,7 +11183,7 @@ run(function()
     local Whitelist = {ListEnabled = {}, Object = nil}
 
     local Folder = Instance.new('Folder')
-    Folder.Parent = vape.gui
+    Folder.Parent = aether.gui
 
     local Reference, Strings, Sizes = {}, {}, {}
 
@@ -11228,7 +11228,7 @@ run(function()
 	end
     end
 
-    ItemESP = vape.Categories.Render:CreateModule({
+    ItemESP = aether.Categories.Render:CreateModule({
 	Name = 'ItemESP',
 	Function = function(call)
 		if call then
@@ -11593,7 +11593,7 @@ run(function()
     local Color = {}
     local Reference = {}
     local Folder = Instance.new('Folder')
-    Folder.Parent = vape.gui
+    Folder.Parent = aether.gui
 
     local ESPKits = {
 	alchemist = {'alchemist_ingedients', 'wild_flower'},
@@ -11712,7 +11712,7 @@ run(function()
     local DistanceLimit
     local Strings, Sizes, Reference = {}, {}, {}
     local Folder = Instance.new('Folder')
-    Folder.Parent = vape.gui
+    Folder.Parent = aether.gui
     local methodused
 
     local Added = {
@@ -11919,7 +11919,7 @@ run(function()
 	Drawing = function(ent)
 		local nametag = Reference[ent]
 		if nametag then
-			if vape.ThreadFix then
+			if aether.ThreadFix then
 				setthreadidentity(8)
 			end
 			Sizes[ent] = nil
@@ -12039,7 +12039,7 @@ run(function()
 	end,
     }
 
-    NameTags = vape.Categories.Render:CreateModule({
+    NameTags = aether.Categories.Render:CreateModule({
 	Name = 'NameTags',
 	Function = function(callback)
 		if callback then
@@ -12068,7 +12068,7 @@ run(function()
 				end
 			end
 			if ColorFunc[methodused] then
-				NameTags:Clean(vape.Categories.Friends.ColorUpdate.Event:Connect(function()
+				NameTags:Clean(aether.Categories.Friends.ColorUpdate.Event:Connect(function()
 					ColorFunc[methodused](Color.Hue, Color.Sat, Color.Value)
 				end))
 			end
@@ -12525,7 +12525,7 @@ run(function()
         end
     end
 
-    ProjectileLanding = vape.Categories.Render:CreateModule({
+    ProjectileLanding = aether.Categories.Render:CreateModule({
         Name = 'ProjectileLanding',
         Function = function(callback)
             if callback then
@@ -12573,7 +12573,7 @@ run(function()
     local rayCheck = RaycastParams.new()
     rayCheck.FilterType = Enum.RaycastFilterType.Exclude
 
-    BulletTracers = vape.Categories.Render:CreateModule({
+    BulletTracers = aether.Categories.Render:CreateModule({
 	Name = 'ProjectileTracers',
 	Function = function(callback)
 		if callback then
@@ -12673,13 +12673,13 @@ run(function()
     local lightingSettings = {}
     local Objects = {}
     local Folder = Instance.new('Folder')
-    Folder.Parent = vape.gui
+    Folder.Parent = aether.gui
 
-    Shader = (vape.Categories.Visuals or vape.Categories.Render):CreateModule({
+    Shader = (aether.Categories.Visuals or aether.Categories.Render):CreateModule({
 	Name = 'Shader',
 	Function = function(callback)
 		if callback then
-			if vape.ThreadFix then
+			if aether.ThreadFix then
 				setthreadidentity(8)
 			end
 
@@ -12800,7 +12800,7 @@ end)
 run(function()
     local TimeChanger, savedClockTime
     local TimeValue = {Value = 18}
-    TimeChanger = (vape.Categories.Visuals or vape.Categories.Render):CreateModule({
+    TimeChanger = (aether.Categories.Visuals or aether.Categories.Render):CreateModule({
         Name = 'TimeChanger',
         Function = function(callback)
             if callback then
@@ -12841,7 +12841,7 @@ run(function()
         table.clear(saved)
     end
 
-    AuroraSky = (vape.Categories.Visuals or vape.Categories.Utility):CreateModule({
+    AuroraSky = (aether.Categories.Visuals or aether.Categories.Utility):CreateModule({
         Name = 'AuroraSky',
         Function = function(callback)
             if callback then
@@ -12923,7 +12923,7 @@ run(function()
         table.clear(saved)
     end
 
-    StormMode = (vape.Categories.Visuals or vape.Categories.Utility):CreateModule({
+    StormMode = (aether.Categories.Visuals or aether.Categories.Utility):CreateModule({
         Name = 'StormMode',
         Function = function(callback)
             if callback then
@@ -13026,7 +13026,7 @@ run(function()
         for _, drop in collectionService:GetTagged('ItemDrop') do addGlow(drop, Color3.fromRGB(255, 240, 150)) end
     end
 
-    Bloom = (vape.Categories.Visuals or vape.Categories.Render):CreateModule({
+    Bloom = (aether.Categories.Visuals or aether.Categories.Render):CreateModule({
         Name = 'Bloom',
         Function = function(callback)
             if callback then
@@ -13073,7 +13073,7 @@ run(function()
         table.clear(saved)
     end
 
-    AbyssalDepths = (vape.Categories.Visuals or vape.Categories.Render):CreateModule({
+    AbyssalDepths = (aether.Categories.Visuals or aether.Categories.Render):CreateModule({
         Name = 'AbyssalDepths',
         Function = function(callback)
             if callback then
@@ -13392,13 +13392,13 @@ run(function()
     end
     function RealLifeBedWars.Toggle() if IRLReplica then IRLReplica:Toggle() end end
 
-    IRLReplica = (vape.Categories.Visuals or vape.Categories.Render):CreateModule({
+    IRLReplica = (aether.Categories.Visuals or aether.Categories.Render):CreateModule({
         Name = 'IRLReplica',
         Function = function(callback)
             RealLifeBedWars.Config.Enabled = callback
             if callback then
                 for _, prop in props do saved[prop] = lightingService[prop] end
-                storageFolder = Instance.new('Folder'); storageFolder.Name = 'AetherIRLStoredLighting'; storageFolder.Parent = vape.gui
+                storageFolder = Instance.new('Folder'); storageFolder.Name = 'AetherIRLStoredLighting'; storageFolder.Parent = aether.gui
                 for _, obj in lightingService:GetChildren() do
                     if obj:IsA('Sky') or obj:IsA('Atmosphere') or obj:IsA('ColorCorrectionEffect') or obj:IsA('BloomEffect') or obj:IsA('SunRaysEffect') or obj:IsA('DepthOfFieldEffect') then obj.Parent = storageFolder end
                 end
@@ -13544,11 +13544,11 @@ run(function()
         end
     end)
 
-    SkinChanger = vape.Categories.Render:CreateModule({
+    SkinChanger = aether.Categories.Render:CreateModule({
         Name = 'SkinChanger',
         Function = function(callback)
             if callback then
-                SkinChanger:Clean(vapeEvents.InventoryChanged.Event:Connect(applySkins))
+                SkinChanger:Clean(aetherEvents.InventoryChanged.Event:Connect(applySkins))
             end
             applySkins()
         end,
@@ -13585,7 +13585,7 @@ run(function()
     local Reference = {}
     local Connections = {}
     local Folder = Instance.new('Folder')
-    Folder.Parent = vape.gui
+    Folder.Parent = aether.gui
 
     local function nearStorageItem(item)
 	for _, v in List.ListEnabled do
@@ -13709,7 +13709,7 @@ run(function()
 	task.spawn(refreshAdornee, billboard)
     end
 
-    StorageESP = vape.Categories.Render:CreateModule({
+    StorageESP = aether.Categories.Render:CreateModule({
 	Name = 'StorageESP',
 	Function = function(callback)
 		if callback then
@@ -13788,7 +13788,7 @@ run(function()
 	stripDisguise(plr)
     end
 
-    StreamRemover = vape.Categories.Render:CreateModule({
+    StreamRemover = aether.Categories.Render:CreateModule({
 	Name = 'StreamRemover',
 	Function = function(call)
 		if call then
@@ -13824,7 +13824,7 @@ run(function()
 
     local Reference = {}
     local Folder = Instance.new('Folder')
-    Folder.Parent = vape.gui
+    Folder.Parent = aether.gui
 
     local function Added(v)
 	local billboard = Instance.new('BillboardGui')
@@ -13862,7 +13862,7 @@ run(function()
 	Reference[v] = billboard
     end
 
-    TrapESP = vape.Categories.Render:CreateModule({
+    TrapESP = aether.Categories.Render:CreateModule({
 	Name = 'TrapESP',
 	Function = function(callback)
 		if callback then
@@ -13922,7 +13922,7 @@ run(function()
 
     local Instances = {}
 
-    ViewmodelVisuals = vape.Categories.Render:CreateModule({
+    ViewmodelVisuals = aether.Categories.Render:CreateModule({
         Name = 'ViewmodelVisuals',
         Function = function(call)
             if call then
@@ -13995,7 +13995,7 @@ end)
     Utility
 ]]
 
--- MP3Player: plays your own .mp3 files out of the aetherv2/songs folder the loader creates.
+-- MP3Player: plays your own .mp3 files out of the aetherv3/songs folder the loader creates.
 --
 -- The folder is scanned live, so songs added or deleted while you are in a game are picked up
 -- without a reinject (Auto refresh, plus a Refresh button for right now). Anything the executor
@@ -14020,8 +14020,8 @@ run(function()
     local HUDTime
     local HUDColor
 
-    local SONGS = 'aetherv2/songs'
-    local SPOTIFY = 'aetherv2/songs/spotify'
+    local SONGS = 'aetherv3/songs'
+    local SPOTIFY = 'aetherv3/songs/spotify'
 
     local sound
     local tracks, index = {}, 0
@@ -14276,7 +14276,7 @@ run(function()
         end
     end
 
-    MP3Player = vape.Categories.Utility:CreateModule({
+    MP3Player = aether.Categories.Utility:CreateModule({
         Name = 'MP3Player',
         Function = function(callback)
             if callback then
@@ -14295,7 +14295,7 @@ run(function()
                 sound.Name = 'AetherMP3'
                 sound.Volume = Volume.Value / 100
                 sound.PlaybackSpeed = Speed.Value
-                sound.Parent = vape.gui
+                sound.Parent = aether.gui
                 MP3Player:Clean(sound)
                 -- Only ever advances: a looping track never ends, because Looped keeps it
                 -- going inside the engine.
@@ -14348,7 +14348,7 @@ run(function()
                 refreshHUD()
             end
         end,
-        Tooltip = 'Plays your own mp3 files from the aetherv2/songs folder, with a HUD and a live-refreshing playlist',
+        Tooltip = 'Plays your own mp3 files from the aetherv3/songs folder, with a HUD and a live-refreshing playlist',
         Size = UDim2.fromOffset(236, 66),
         ExtraText = function()
             local track = tracks[index]
@@ -14625,7 +14625,7 @@ run(function()
         end
     end
 
-    AntiSuffocate = vape.Categories.Utility:CreateModule({
+    AntiSuffocate = aether.Categories.Utility:CreateModule({
 	Name = 'AntiSuffocate',
 	Function = function(call)
 		if call then
@@ -14660,7 +14660,7 @@ end)
 run(function()
     local AutoBalloon
 
-    AutoBalloon = vape.Categories.Utility:CreateModule({
+    AutoBalloon = aether.Categories.Utility:CreateModule({
         Name = 'AutoBalloon',
         Function = function(callback)
             if callback then
@@ -14948,7 +14948,7 @@ run(function()
         end
     end
 
-    AntiLasso = vape.Categories.Utility:CreateModule({
+    AntiLasso = aether.Categories.Utility:CreateModule({
         Name = 'AntiLasso',
         Function = function(callback)
             if callback then
@@ -15010,7 +15010,7 @@ run(function()
 
     local rayCheck = RaycastParams.new()
 
-    AutoLasso = vape.Categories.Utility:CreateModule({
+    AutoLasso = aether.Categories.Utility:CreateModule({
         Name = 'AutoLasso',
         Function = function(callback)
             if callback then
@@ -15181,7 +15181,7 @@ run(function()
 	return nil
     end
 
-    AutoPearl = vape.Categories.Utility:CreateModule({
+    AutoPearl = aether.Categories.Utility:CreateModule({
 	Name = 'AutoPearl',
 	Function = function(callback)
 		if callback then
@@ -15698,17 +15698,17 @@ run(function()
         end)
     end
 
-    AutoPlay = vape.Categories.Utility:CreateModule({
+    AutoPlay = aether.Categories.Utility:CreateModule({
         Name = 'AutoPlay',
         Function = function(callback)
             if callback then
                 queueing = false
-                AutoPlay:Clean(vapeEvents.EntityDeathEvent.Event:Connect(function(deathTable)
+                AutoPlay:Clean(aetherEvents.EntityDeathEvent.Event:Connect(function(deathTable)
                     if deathTable.finalKill and deathTable.entityInstance == lplr.Character and isEveryoneDead() and store.matchState ~= 2 then
                         joinQueue()
                     end
                 end))
-                AutoPlay:Clean(vapeEvents.MatchEndEvent.Event:Connect(joinQueue))
+                AutoPlay:Clean(aetherEvents.MatchEndEvent.Event:Connect(joinQueue))
             end
         end,
         Tooltip = 'Automatically queues after the match ends'
@@ -15727,7 +15727,7 @@ run(function()
     local launchHook, last = nil, 0
     local charge = 0
 
-    AutoRelease = vape.Categories.Utility:CreateModule({
+    AutoRelease = aether.Categories.Utility:CreateModule({
 	Name = 'AutoRelease',
 	Function = function(call)
 		if call then
@@ -15853,7 +15853,7 @@ run(function()
 		return nil
     end
 
-    AutoShoot = vape.Categories.Utility:CreateModule({
+    AutoShoot = aether.Categories.Utility:CreateModule({
 	Name = 'AutoShoot',
 		Function = function(callback)
 			if callback then
@@ -15948,7 +15948,7 @@ run(function()
 				local ok, err = pcall(pass)
 				if not ok and not reported then
 					reported = true
-					warn('[AetherV2] AutoShoot: '..tostring(err))
+					warn('[AetherV3] AutoShoot: '..tostring(err))
 				end
 				task.wait(0.1)
 			until not AutoShoot.Enabled
@@ -16041,11 +16041,11 @@ run(function()
         doSend(custommsg)
     end
 
-    AutoToxic = vape.Categories.Utility:CreateModule({
+    AutoToxic = aether.Categories.Utility:CreateModule({
         Name = 'AutoToxic',
         Function = function(callback)
             if callback then
-                AutoToxic:Clean(vapeEvents.BedwarsBedBreak.Event:Connect(function(bedTable)
+                AutoToxic:Clean(aetherEvents.BedwarsBedBreak.Event:Connect(function(bedTable)
                     if Toggles.BedDestroyed.Enabled and bedTable.brokenBedTeam.id == lplr:GetAttribute('Team') then
                         sendMessage('BedDestroyed', (bedTable.player.DisplayName or bedTable.player.Name), 'how dare you >:( | <obj>')
                     elseif Toggles.Bed.Enabled and bedTable.player.UserId == lplr.UserId then
@@ -16053,7 +16053,7 @@ run(function()
                         sendMessage('Bed', team and team.displayName:lower() or 'white', 'nice bed lul | <obj>')
                     end
                 end))
-                AutoToxic:Clean(vapeEvents.EntityDeathEvent.Event:Connect(function(deathTable)
+                AutoToxic:Clean(aetherEvents.EntityDeathEvent.Event:Connect(function(deathTable)
                     if deathTable.finalKill then
                         local killer = playersService:GetPlayerFromCharacter(deathTable.fromEntity)
                         local killed = playersService:GetPlayerFromCharacter(deathTable.entityInstance)
@@ -16068,7 +16068,7 @@ run(function()
                         end
                     end
                 end))
-                AutoToxic:Clean(vapeEvents.MatchEndEvent.Event:Connect(function(winstuff)
+                AutoToxic:Clean(aetherEvents.MatchEndEvent.Event:Connect(function(winstuff)
                     if GG.Enabled then
                         doSend('gg')
                     end
@@ -16215,7 +16215,7 @@ run(function()
         return false
     end
 
-    AutoVoidDrop = vape.Categories.Utility:CreateModule({
+    AutoVoidDrop = aether.Categories.Utility:CreateModule({
         Name = 'AutoVoidDrop',
         Function = function(callback)
             if callback then
@@ -16278,7 +16278,7 @@ run(function()
     local Latency
     local Tick
 
-    BackTrack = vape.Categories.Utility:CreateModule({
+    BackTrack = aether.Categories.Utility:CreateModule({
         Name = 'BackTrack',
         Function = function(callback)
             if callback then
@@ -17179,7 +17179,7 @@ run(function()
     Events.Killaura = function()
         local last, intervals, victims, hits, quiet = {}, {}, {}, {}, {}
 
-        CheatDetector:Clean(vapeEvents.EntityDamageEvent.Event:Connect(function(damageTable)
+        CheatDetector:Clean(aetherEvents.EntityDamageEvent.Event:Connect(function(damageTable)
             if not wanted('Killaura') then return end
             if damageTable.damageType ~= 0 or not damageTable.fromEntity then return end
 
@@ -17283,7 +17283,7 @@ run(function()
     -- sword in the game swings 14.4 studs or less; past 15.5 the hit came from somewhere the
     -- weapon does not reach.
     Events.Reach = function()
-        CheatDetector:Clean(vapeEvents.EntityDamageEvent.Event:Connect(function(damageTable)
+        CheatDetector:Clean(aetherEvents.EntityDamageEvent.Event:Connect(function(damageTable)
             if not wanted('Reach') then return end
             if damageTable.damageType ~= 0 or not damageTable.fromEntity or not damageTable.entityInstance then return end
 
@@ -17316,7 +17316,7 @@ run(function()
     -- distance has to be inside legitimate reach too, otherwise this is just Reach again and one
     -- swing would be counted twice.
     Events.HitBoxes = function()
-        CheatDetector:Clean(vapeEvents.EntityDamageEvent.Event:Connect(function(damageTable)
+        CheatDetector:Clean(aetherEvents.EntityDamageEvent.Event:Connect(function(damageTable)
             if not wanted('HitBoxes') then return end
             if damageTable.damageType ~= 0 or not damageTable.fromEntity or not damageTable.entityInstance then return end
 
@@ -17355,7 +17355,7 @@ run(function()
     -- Only long shots are considered, because at close range the angle to a target is wide even
     -- when aimed honestly, and only non-melee damage, so a sword swing is never counted here.
     Events.SilentAim = function()
-        CheatDetector:Clean(vapeEvents.EntityDamageEvent.Event:Connect(function(damageTable)
+        CheatDetector:Clean(aetherEvents.EntityDamageEvent.Event:Connect(function(damageTable)
             if not wanted('SilentAim') then return end
             if damageTable.damageType == 0 or not damageTable.fromEntity or not damageTable.entityInstance then return end
 
@@ -17389,7 +17389,7 @@ run(function()
     -- on live players at long range, faster than they can be aimed, is the thing no hand does.
     Events.ProjectileAim = function()
         local hits = {}
-        CheatDetector:Clean(vapeEvents.EntityDamageEvent.Event:Connect(function(damageTable)
+        CheatDetector:Clean(aetherEvents.EntityDamageEvent.Event:Connect(function(damageTable)
             if not wanted('ProjectileAim') then return end
             if damageTable.damageType == 0 or not damageTable.fromEntity or not damageTable.entityInstance then return end
 
@@ -17420,7 +17420,7 @@ run(function()
     -- are read off the break event itself, which carries who did it and where.
     Events.Breaker = function()
         local rates = {}
-        CheatDetector:Clean(vapeEvents.BreakBlockEvent.Event:Connect(function(data)
+        CheatDetector:Clean(aetherEvents.BreakBlockEvent.Event:Connect(function(data)
             if not wanted('Breaker') then return end
             local plr = data.player
             if not plr or selfExcluded(plr) or CheatersFlagged[plr] then return end
@@ -17475,13 +17475,13 @@ run(function()
             end
         end
 
-        CheatDetector:Clean(vapeEvents.BreakBlockEvent.Event:Connect(function(data)
+        CheatDetector:Clean(aetherEvents.BreakBlockEvent.Event:Connect(function(data)
             count(data.player)
         end))
-        CheatDetector:Clean(vapeEvents.PlaceBlockEvent.Event:Connect(function(data)
+        CheatDetector:Clean(aetherEvents.PlaceBlockEvent.Event:Connect(function(data)
             count(data and data.player)
         end))
-        CheatDetector:Clean(vapeEvents.EntityDamageEvent.Event:Connect(function(damageTable)
+        CheatDetector:Clean(aetherEvents.EntityDamageEvent.Event:Connect(function(damageTable)
             if not damageTable.fromEntity then return end
             count(playersService:GetPlayerFromCharacter(damageTable.fromEntity))
         end))
@@ -17515,7 +17515,7 @@ run(function()
         return list
     end
 
-    CheatDetector = vape.Categories.Utility:CreateModule({
+    CheatDetector = aether.Categories.Utility:CreateModule({
         Name = 'CheatDetector',
         Function = function(callback)
             if callback then
@@ -17528,7 +17528,7 @@ run(function()
                 voidStamp = 0
 
                 -- Feeds the knockback suppression the speed and jump checks rely on.
-                CheatDetector:Clean(vapeEvents.EntityDamageEvent.Event:Connect(function(damageTable)
+                CheatDetector:Clean(aetherEvents.EntityDamageEvent.Event:Connect(function(damageTable)
                     local victim = damageTable.entityInstance and playersService:GetPlayerFromCharacter(damageTable.entityInstance)
                     if victim then
                         lastHurt[victim] = tick()
@@ -17543,7 +17543,7 @@ run(function()
                 for name, event in Events do
                     local ok, err = pcall(event)
                     if not ok then
-                        warn('[AetherV2] CheatDetector '..name..': '..tostring(err))
+                        warn('[AetherV3] CheatDetector '..name..': '..tostring(err))
                     end
                 end
 
@@ -17553,7 +17553,7 @@ run(function()
                     if ok and type(fn) == 'function' then
                         running[name] = fn
                     else
-                        warn('[AetherV2] CheatDetector '..name..': '..tostring(fn))
+                        warn('[AetherV3] CheatDetector '..name..': '..tostring(fn))
                     end
                 end
 
@@ -17586,7 +17586,7 @@ run(function()
                                 if not wanted(name) then continue end
                                 local ok, err = pcall(fn, now, list, delta)
                                 if not ok then
-                                    warn('[AetherV2] CheatDetector '..name..': '..tostring(err))
+                                    warn('[AetherV3] CheatDetector '..name..': '..tostring(err))
                                 end
                             end
                         end
@@ -17675,7 +17675,7 @@ run(function()
 
     local rng
 
-    FakeLag = vape.Categories.Utility:CreateModule({
+    FakeLag = aether.Categories.Utility:CreateModule({
         Name = 'FakeLag',
         Function = function(callback)
             if callback then
@@ -17782,7 +17782,7 @@ run(function()
 	return old(root, mass, dir, knockback, select(5, ...))
     end
 
-    KnockbackDelay = vape.Categories.Utility:CreateModule({
+    KnockbackDelay = aether.Categories.Utility:CreateModule({
 	Name = 'KnockbackDelay',
 	Function = function(callback)
 		if callback then
@@ -17884,7 +17884,7 @@ run(function()
     local Network
     local Lower
 
-    PickupRange = vape.Categories.Utility:CreateModule({
+    PickupRange = aether.Categories.Utility:CreateModule({
         Name = 'PickupRange',
         Function = function(callback)
             if callback then
@@ -18148,7 +18148,7 @@ run(function()
         return nil, 0
     end
 
-    Scaffold = vape.Categories.Utility:CreateModule({
+    Scaffold = aether.Categories.Utility:CreateModule({
         Name = 'Scaffold',
         Function = function(callback)
             if label then
@@ -18254,7 +18254,7 @@ run(function()
                 label.RichText = true
                 label.Font = Enum.Font.Arial
                 label.Visible = Scaffold.Enabled
-                label.Parent = vape.gui
+                label.Parent = aether.gui
             else
                 label:Destroy()
                 label = nil
@@ -18290,8 +18290,8 @@ run(function()
     end
 
     local function staffFunction(plr, checktype)
-        if not vape.Loaded then
-            repeat task.wait() until vape.Loaded
+        if not aether.Loaded then
+            repeat task.wait() until aether.Loaded
         end
 
         notif('StaffDetector', 'Staff Detected ('..checktype..'): '..plr.Name..' ('..plr.UserId..')', 60, 'alert')
@@ -18304,7 +18304,7 @@ run(function()
 
         if Mode.Value == 'Uninject' then
             task.spawn(function()
-                vape:Uninject()
+                aether:Uninject()
             end)
             game:GetService('StarterGui'):SetCore('SendNotification', {
                 Title = 'StaffDetector',
@@ -18314,14 +18314,14 @@ run(function()
         elseif Mode.Value == 'Requeue' then
             bedwars.QueueController:joinQueue(store.queueType)
         elseif Mode.Value == 'Profile' then
-            vape.Save = function() end
-            if vape.Profile ~= Profile.Value then
-                vape:Load(true, Profile.Value)
+            aether.Save = function() end
+            if aether.Profile ~= Profile.Value then
+                aether:Load(true, Profile.Value)
             end
         elseif Mode.Value == 'AutoConfig' then
             local safe = {'AutoClicker', 'Reach', 'Sprint', 'HitFix', 'StaffDetector'}
-            vape.Save = function() end
-            for i, v in vape.Modules do
+            aether.Save = function() end
+            for i, v in aether.Modules do
                 if not (table.find(safe, i) or v.Category == 'Render') then
                     if v.Enabled then
                         v:Toggle()
@@ -18385,14 +18385,14 @@ run(function()
                 plr:GetAttributeChangedSignal('ClanTag'):Wait()
             end
 
-            if table.find(blacklistedclans, plr:GetAttribute('ClanTag')) and vape.Loaded and Clans.Enabled then
+            if table.find(blacklistedclans, plr:GetAttribute('ClanTag')) and aether.Loaded and Clans.Enabled then
                 connection:Disconnect()
                 staffFunction(plr, 'blacklisted_clan_'..plr:GetAttribute('ClanTag'):lower())
             end
         end
     end
 
-    StaffDetector = vape.Categories.Utility:CreateModule({
+    StaffDetector = aether.Categories.Utility:CreateModule({
         Name = 'StaffDetector',
         Function = function(callback)
             if callback then
@@ -18449,7 +18449,7 @@ run(function()
 end)
 
 run(function()
-    TrapDisabler = vape.Categories.Utility:CreateModule({
+    TrapDisabler = aether.Categories.Utility:CreateModule({
         Name = 'TrapDisabler',
         Tooltip = 'Disables Snap Traps'
     })
@@ -18506,7 +18506,7 @@ run(function()
     -- this file. The queue we want after a match therefore has to be handed over on disk; the
     -- lobby's AutoQueue module reads exactly this file.
     local LOBBY_PLACE = 6872265039
-    local STATE_FILE = 'aetherv2/profiles/autowin.json'
+    local STATE_FILE = 'aetherv3/profiles/autowin.json'
 
     -- Blocks sit on a 3-stud grid. A cell's centre is cell * 3, and standing on that cell puts
     -- your feet 1.5 studs above the centre. Every routing decision below is in whole cells.
@@ -18702,8 +18702,8 @@ run(function()
     -- window. AutoWin drives kit modules (and could drive anything else that moved), so look
     -- in all of them rather than only the tabs.
     local function moduleByName(name)
-        if vape.Modules and vape.Modules[name] then return vape.Modules[name] end
-        for _, panel in {vape.Kits, vape.Legit} do
+        if aether.Modules and aether.Modules[name] then return aether.Modules[name] end
+        for _, panel in {aether.Kits, aether.Legit} do
             if panel and panel.Modules and panel.Modules[name] then
                 return panel.Modules[name]
             end
@@ -20883,7 +20883,7 @@ run(function()
                 -- a genuinely broken build will show up as the watchdog resetting instead.
                 failures = failures + 1
                 if failures <= 3 then
-                    warn('[AetherV2] AutoWin tick failed: ' .. tostring(err))
+                    warn('[AetherV3] AutoWin tick failed: ' .. tostring(err))
                 end
                 if failures > 3 then task.wait(1) end
             end
@@ -20931,7 +20931,7 @@ run(function()
     ----------------------------------------------------------------------------------------------
     -- Module.
     ----------------------------------------------------------------------------------------------
-    AutoWin = vape.Categories.World:CreateModule({
+    AutoWin = aether.Categories.World:CreateModule({
         Name = 'AutoWin',
         Function = function(callback)
             if callback then
@@ -20960,12 +20960,12 @@ run(function()
                     end
                 end))
                 watchDisconnects(gen)
-                AutoWin:Clean(vapeEvents.MatchEndEvent.Event:Connect(function()
+                AutoWin:Clean(aetherEvents.MatchEndEvent.Event:Connect(function()
                     if not running(gen) then return end
                     stopMoving()
                     task.delay(1.5, joinQueue)
                 end))
-                AutoWin:Clean(vapeEvents.EntityDeathEvent.Event:Connect(function(deathTable)
+                AutoWin:Clean(aetherEvents.EntityDeathEvent.Event:Connect(function(deathTable)
                     if not running(gen) then return end
                     if deathTable.entityInstance ~= lplr.Character then return end
                     stopMoving()
@@ -21257,7 +21257,7 @@ run(function()
     -- time we could not see the player is not counted as time observed.
     --
     -- This module is a read-out. It never touches another module's settings. What it knows is
-    -- published on getgenv().EntityAnalyser and vapeEvents.EntityAnalysed for anything that wants
+    -- published on getgenv().EntityAnalyser and aetherEvents.EntityAnalysed for anything that wants
     -- to act on it - Killaura's 'Target skilled' is the first consumer.
     local EntityAnalyser
     local SweatAt
@@ -23273,7 +23273,7 @@ run(function()
         local previous = record.Cache
         record.Cache = analysis
         if not previous or previous.Rating ~= analysis.Rating or previous.Role ~= analysis.Role then
-            vapeEvents.EntityAnalysed:Fire(record.Player, analysis)
+            aetherEvents.EntityAnalysed:Fire(record.Player, analysis)
             local wasHigh = previous ~= nil and (previous.Rating == 'Skilled' or previous.Rating == 'Sweat')
             local isHigh = analysis.Rating == 'Skilled' or analysis.Rating == 'Sweat'
             if Notify.Enabled and isHigh and not wasHigh then
@@ -23492,29 +23492,29 @@ run(function()
     }
     getgenv().EntityAnalyser = api
 
-    EntityAnalyser = vape.Categories.Utility:CreateModule({
+    EntityAnalyser = aether.Categories.Utility:CreateModule({
         Name = 'EntityAnalyser',
         Function = function(callback)
             running = callback
             api.Enabled = callback
             -- Anything whose UI depends on the analyser being up listens for this rather than
             -- reaching into this module - see Killaura's 'Target skilled'.
-            vapeEvents.EntityAnalyserState:Fire(callback)
+            aetherEvents.EntityAnalyserState:Fire(callback)
 
             if callback then
                 matchStart, lastMatchState = tick(), -1
                 bedsAtStart = #collectionService:GetTagged('bed')
                 folder = Instance.new('Folder')
                 folder.Name = 'EntityAnalyser'
-                folder.Parent = vape.gui
+                folder.Parent = aether.gui
                 EntityAnalyser:Clean(folder)
 
-                EntityAnalyser:Clean(vapeEvents.EntityDamageEvent.Event:Connect(onDamage))
-                EntityAnalyser:Clean(vapeEvents.EntityDeathEvent.Event:Connect(onDeath))
-                EntityAnalyser:Clean(vapeEvents.BedwarsBedBreak.Event:Connect(onBedBreak))
-                EntityAnalyser:Clean(vapeEvents.PlaceBlockEvent.Event:Connect(onPlaceBlock))
-                EntityAnalyser:Clean(vapeEvents.BreakBlockEvent.Event:Connect(onBreakBlock))
-                EntityAnalyser:Clean(vapeEvents.MatchEndEvent.Event:Connect(function()
+                EntityAnalyser:Clean(aetherEvents.EntityDamageEvent.Event:Connect(onDamage))
+                EntityAnalyser:Clean(aetherEvents.EntityDeathEvent.Event:Connect(onDeath))
+                EntityAnalyser:Clean(aetherEvents.BedwarsBedBreak.Event:Connect(onBedBreak))
+                EntityAnalyser:Clean(aetherEvents.PlaceBlockEvent.Event:Connect(onPlaceBlock))
+                EntityAnalyser:Clean(aetherEvents.BreakBlockEvent.Event:Connect(onBreakBlock))
+                EntityAnalyser:Clean(aetherEvents.MatchEndEvent.Event:Connect(function()
                     table.clear(engagements)
                     table.clear(pendingVoid)
                 end))
@@ -23660,7 +23660,7 @@ run(function()
         Tooltip = 'Say something the first time a player crosses into skilled or sweat'
     })
 
-    vape:Clean(function()
+    aether:Clean(function()
         running = false
         api.Enabled = false
         table.clear(profiles)
@@ -23674,7 +23674,7 @@ end)
 ]]
 
 run(function()
-    vape.Categories.World:CreateModule({
+    aether.Categories.World:CreateModule({
         Name = 'Anti-AFK',
         Function = function(callback)
             if callback then
@@ -23706,7 +23706,7 @@ run(function()
         return bedwars.BlockController:getBlockPosition(pos) * 3
     end
 
-    AutoSuffocate = vape.Categories.World:CreateModule({
+    AutoSuffocate = aether.Categories.World:CreateModule({
         Name = 'AutoSuffocate',
         Function = function(callback)
             if callback then
@@ -23790,7 +23790,7 @@ run(function()
         end
     end
 
-    AutoTool = vape.Categories.World:CreateModule({
+    AutoTool = aether.Categories.World:CreateModule({
         Name = 'AutoTool',
         Function = function(callback)
             if callback then
@@ -23894,7 +23894,7 @@ run(function()
         return nil
     end
 
-    BedAssist = vape.Categories.World:CreateModule({
+    BedAssist = aether.Categories.World:CreateModule({
         Name = 'BedAssist',
         Function = function(call)
             if call then
@@ -24191,7 +24191,7 @@ run(function()
         end
     end
 
-    BedProtector = vape.Categories.World:CreateModule({
+    BedProtector = aether.Categories.World:CreateModule({
         Name = 'BedProtector',
         Function = function(callback)
             if callback then
@@ -24435,7 +24435,7 @@ run(function()
 	return pattern
     end
 
-    BlockIn = vape.Categories.World:CreateModule({
+    BlockIn = aether.Categories.World:CreateModule({
 	Name = 'Block-In',
 	Function = function(callback)
 		if callback then
@@ -24754,7 +24754,7 @@ run(function()
         end
     end
 
-    Schematica = vape.Categories.World:CreateModule({
+    Schematica = aether.Categories.World:CreateModule({
         Name = 'Schematica',
         Function = function(callback)
             if callback then
@@ -24823,7 +24823,7 @@ run(function()
     local Targets
     local Range
 
-    ArmorSwitch = vape.Categories.Inventory:CreateModule({
+    ArmorSwitch = aether.Categories.Inventory:CreateModule({
         Name = 'ArmorSwitch',
         Function = function(callback)
             if callback then
@@ -24844,7 +24844,7 @@ run(function()
                                     item = store.inventory.inventory.armor[i + 1] == 'empty' and state and getBestArmor(i) or nil,
                                     armorSlot = i
                                 })
-                                vapeEvents.InventoryChanged.Event:Wait()
+                                aetherEvents.InventoryChanged.Event:Wait()
                             end
                         end
                         task.wait(0.1)
@@ -24857,7 +24857,7 @@ run(function()
                             item = store.inventory.inventory.armor[i + 1] == 'empty' and getBestArmor(i) or nil,
                             armorSlot = i
                         })
-                        vapeEvents.InventoryChanged.Event:Wait()
+                        aetherEvents.InventoryChanged.Event:Wait()
                     end
                 end
             end
@@ -25080,7 +25080,7 @@ run(function()
         displayEntries[itemType] = amount
     end
 
-    AutoBank = vape.Categories.Inventory:CreateModule({
+    AutoBank = aether.Categories.Inventory:CreateModule({
         Name = 'AutoBank',
         Function = function(callback)
             if not callback then
@@ -25105,7 +25105,7 @@ run(function()
             UI.Position = UDim2.fromOffset(0, -240)
             UI.BackgroundTransparency = 1
             UI.Visible = DisplayResources.Enabled
-            UI.Parent = vape.gui
+            UI.Parent = aether.gui
             AutoBank:Clean(UI)
             local layout = Instance.new('UIListLayout')
             layout.FillDirection = Enum.FillDirection.Horizontal
@@ -25510,7 +25510,7 @@ run(function()
         return true
     end
 
-    AutoBuy = vape.Categories.Inventory:CreateModule({
+    AutoBuy = aether.Categories.Inventory:CreateModule({
         Name = 'AutoBuy',
         Function = function(callback)
             if callback then
@@ -25518,7 +25518,7 @@ run(function()
                 if BedwarsCheck.Enabled and not store.queueType:find('bedwars') then return end
 
                 local lastupgrades
-                AutoBuy:Clean(vapeEvents.InventoryAmountChanged.Event:Connect(function()
+                AutoBuy:Clean(aetherEvents.InventoryAmountChanged.Event:Connect(function()
                     if (npctick - tick()) > 1 then npctick = tick() end
                 end))
 
@@ -25547,7 +25547,7 @@ run(function()
                                 -- everything else on the list still gets its turn.
                                 local ok, bought = pcall(callback, currencytable, shop, upgrades)
                                 if not ok then
-                                    warn('[AetherV2] AutoBuy: '..tostring(bought))
+                                    warn('[AetherV3] AutoBuy: '..tostring(bought))
                                 elseif bought then
                                     waitcheck = true
                                 end
@@ -25795,12 +25795,12 @@ run(function()
         end
     end
 
-    AutoConsume = vape.Categories.Inventory:CreateModule({
+    AutoConsume = aether.Categories.Inventory:CreateModule({
         Name = 'AutoConsume',
         Function = function(callback)
             if callback then
-                AutoConsume:Clean(vapeEvents.InventoryAmountChanged.Event:Connect(consumeCheck))
-                AutoConsume:Clean(vapeEvents.AttributeChanged.Event:Connect(function(attribute)
+                AutoConsume:Clean(aetherEvents.InventoryAmountChanged.Event:Connect(consumeCheck))
+                AutoConsume:Clean(aetherEvents.AttributeChanged.Event:Connect(function(attribute)
                     if attribute:find('Shield') or attribute:find('Health') or attribute == 'StatusEffect_speed' then
                         consumeCheck(attribute)
                     end
@@ -25851,7 +25851,7 @@ run(function()
 	return
     end
 
-    AutoFish = vape.Categories.Inventory:CreateModule({
+    AutoFish = aether.Categories.Inventory:CreateModule({
 	Name = 'AutoFish',
 	Function = function(call)
 		if call then
@@ -25976,7 +25976,7 @@ run(function()
         window.BackgroundColor3 = uipallet.Main
         window.AnchorPoint = Vector2.new(0.5, 0.5)
         window.Visible = false
-        window.Parent = vape.gui.ScaledGui
+        window.Parent = aether.gui.ScaledGui
         local title = Instance.new('TextLabel')
         title.Name = 'Title'
         title.Size = UDim2.new(1, -10, 0, 20)
@@ -26010,7 +26010,7 @@ run(function()
         close.Position = UDim2.new(1, -35, 0, 9)
         close.BackgroundColor3 = Color3.new(1, 1, 1)
         close.BackgroundTransparency = 1
-        close.Image = getcustomasset('aetherv2/assets/new/close.png')
+        close.Image = getcustomasset('aetherv3/assets/new/close.png')
         close.ImageColor3 = color.Light(uipallet.Text, 0.2)
         close.ImageTransparency = 0.5
         close.AutoButtonColor = false
@@ -26029,7 +26029,7 @@ run(function()
         end)
         close.MouseButton1Click:Connect(function()
             window.Visible = false
-            vape.gui.ScaledGui.ClickGui.Visible = true
+            aether.gui.ScaledGui.ClickGui.Visible = true
         end)
         local closecorner = Instance.new('UICorner')
         closecorner.CornerRadius = UDim.new(1, 0)
@@ -26124,7 +26124,7 @@ run(function()
         searchicon.Size = UDim2.fromOffset(14, 14)
         searchicon.Position = UDim2.new(1, -26, 0, 8)
         searchicon.BackgroundTransparency = 1
-        searchicon.Image = getcustomasset('aetherv2/assets/new/search.png')
+        searchicon.Image = getcustomasset('aetherv3/assets/new/search.png')
         searchicon.ImageColor3 = color.Light(uipallet.Main, 0.37)
         searchicon.Parent = searchbkg
         local children = Instance.new('ScrollingFrame')
@@ -26144,12 +26144,12 @@ run(function()
         windowlist.CellPadding = UDim2.fromOffset(4, 3)
         windowlist.Parent = children
         windowlist:GetPropertyChangedSignal('AbsoluteContentSize'):Connect(function()
-            if vape.ThreadFix then
+            if aether.ThreadFix then
                 setthreadidentity(8)
             end
-            children.CanvasSize = UDim2.fromOffset(0, windowlist.AbsoluteContentSize.Y / vape.guiscale.Scale)
+            children.CanvasSize = UDim2.fromOffset(0, windowlist.AbsoluteContentSize.Y / aether.guiscale.Scale)
         end)
-        table.insert(vape.Windows, window)
+        table.insert(aether.Windows, window)
 
         local function createitem(id, image)
             local slotbkg = Instance.new('TextButton')
@@ -26213,8 +26213,8 @@ run(function()
         return window
     end
 
-    vape.Components.HotbarList = function(optionsettings, children, api)
-        if vape.ThreadFix then
+    aether.Components.HotbarList = function(optionsettings, children, api)
+        if aether.ThreadFix then
             setthreadidentity(8)
         end
         local optionapi = {
@@ -26265,7 +26265,7 @@ run(function()
         textbuttonicon.Position = UDim2.fromScale(0.5, 0.5)
         textbuttonicon.AnchorPoint = Vector2.new(0.5, 0.5)
         textbuttonicon.BackgroundTransparency = 1
-        textbuttonicon.Image = getcustomasset('aetherv2/assets/new/add.png')
+        textbuttonicon.Image = getcustomasset('aetherv3/assets/new/add.png')
         textbuttonicon.ImageColor3 = Color3.fromHSV(0.46, 0.96, 0.52)
         textbuttonicon.Parent = textbutton
         local childrenlist = Instance.new('Frame')
@@ -26279,10 +26279,10 @@ run(function()
         windowlist.Padding = UDim.new(0, 3)
         windowlist.Parent = childrenlist
         windowlist:GetPropertyChangedSignal('AbsoluteContentSize'):Connect(function()
-            if vape.ThreadFix then
+            if aether.ThreadFix then
                 setthreadidentity(8)
             end
-            hotbarlist.Size = UDim2.fromOffset(220, math.min(43 + windowlist.AbsoluteContentSize.Y / vape.guiscale.Scale, 603))
+            hotbarlist.Size = UDim2.fromOffset(220, math.min(43 + windowlist.AbsoluteContentSize.Y / aether.guiscale.Scale, 603))
         end)
         textbutton.MouseButton1Click:Connect(function()
             optionapi:AddHotbar()
@@ -26339,7 +26339,7 @@ run(function()
             hotbar.MouseButton1Click:Connect(function()
                 local ind = table.find(optionapi.Hotbars, hotbardata)
                 if ind == optionapi.Selected then
-                    vape.gui.ScaledGui.ClickGui.Visible = false
+                    aether.gui.ScaledGui.ClickGui.Visible = false
                     optionapi.Window.Visible = true
                     for i = 1, 9 do
                         optionapi.Window['Slot'..i].ImageLabel.Image = hotbardata.Hotbar[tostring(i)] and bedwars.getIcon({itemType = hotbardata.Hotbar[tostring(i)]}, true) or ''
@@ -26358,7 +26358,7 @@ run(function()
             close.Position = UDim2.new(1, -23, 0, 6)
             close.BackgroundColor3 = Color3.new(1, 1, 1)
             close.BackgroundTransparency = 1
-            close.Image = getcustomasset('aetherv2/assets/new/closemini.png')
+            close.Image = getcustomasset('aetherv3/assets/new/closemini.png')
             close.ImageColor3 = color.Light(uipallet.Text, 0.2)
             close.ImageTransparency = 0.5
             close.AutoButtonColor = false
@@ -26458,7 +26458,7 @@ run(function()
 
     local function dispatch(...)
         bedwars.Store:dispatch(...)
-        vapeEvents.InventoryChanged.Event:Wait()
+        aetherEvents.InventoryChanged.Event:Wait()
     end
 
     local function sortCallback()
@@ -26512,7 +26512,7 @@ run(function()
         Active = false
     end
 
-    AutoHotbar = vape.Categories.Inventory:CreateModule({
+    AutoHotbar = aether.Categories.Inventory:CreateModule({
         Name = 'AutoHotbar',
         Function = function(callback)
             if callback then
@@ -26522,7 +26522,7 @@ run(function()
                     return
                 end
 
-                AutoHotbar:Clean(vapeEvents.InventoryAmountChanged.Event:Connect(sortCallback))
+                AutoHotbar:Clean(aetherEvents.InventoryAmountChanged.Event:Connect(sortCallback))
             end
         end,
         Tooltip = 'Automatically arranges hotbar to your liking'
@@ -26618,7 +26618,7 @@ run(function()
         inv():Get('SetObservedChest'):SendToServer(nil)
     end
 
-    AutoSteal = vape.Categories.Inventory:CreateModule({
+    AutoSteal = aether.Categories.Inventory:CreateModule({
         Name = 'AutoSteal',
         Function = function(call)
             if not call then return end
@@ -26714,7 +26714,7 @@ run(function()
     local Value
     local oldclickhold, oldshowprogress
 
-    local FastConsume = vape.Categories.Inventory:CreateModule({
+    local FastConsume = aether.Categories.Inventory:CreateModule({
         Name = 'FastConsume',
         Function = function(callback)
             if callback then
@@ -26785,7 +26785,7 @@ end)
 run(function()
     local FastDrop
 
-    FastDrop = vape.Categories.Inventory:CreateModule({
+    FastDrop = aether.Categories.Inventory:CreateModule({
         Name = 'FastDrop',
         Function = function(callback)
             if callback then
@@ -26882,20 +26882,20 @@ run(function()
         honoring = false
     end
 
-    AutoHonor = vape.Categories.Minigames:CreateModule({
+    AutoHonor = aether.Categories.Minigames:CreateModule({
         Name = 'AutoHonor',
         Function = function(callback)
             if callback then
                 table.clear(Honored)
                 honoring = false
-                AutoHonor:Clean(vapeEvents.EntityDeathEvent.Event:Connect(function(deathTable)
+                AutoHonor:Clean(aetherEvents.EntityDeathEvent.Event:Connect(function(deathTable)
                     if deathTable.finalKill and deathTable.entityInstance == lplr.Character and #bedwars.Store:getState().Party.members <= 0 and store.matchState ~= 2 then
                         task.spawn(honor)
                     end
                 end))
                 -- honor() waits internally, so it must not run ON the event thread: a yield inside a
                 -- BindableEvent handler is what stopped the match-end honor from finishing.
-                AutoHonor:Clean(vapeEvents.MatchEndEvent.Event:Connect(function()
+                AutoHonor:Clean(aetherEvents.MatchEndEvent.Event:Connect(function()
                     task.spawn(honor)
                 end))
                 -- The two-honor cap is per match, so clear the record whenever a new one starts.
@@ -26937,7 +26937,7 @@ run(function()
     local LayerColor
     local Reference = {}
     local Folder = Instance.new('Folder')
-    Folder.Parent = vape.gui
+    Folder.Parent = aether.gui
 
     local function getBlockLayerHealth(block)
 	local meta = bedwars.ItemMeta[block]
@@ -27068,15 +27068,15 @@ run(function()
 	end
     end
 
-    BedPlates = vape.Categories.Minigames:CreateModule({
+    BedPlates = aether.Categories.Minigames:CreateModule({
 	Name = 'BedPlates',
 	Function = function(callback)
 		if callback then
 			for _, v in collectionService:GetTagged('bed') do
 				task.spawn(Added, v)
 			end
-			BedPlates:Clean(vapeEvents.PlaceBlockEvent.Event:Connect(refreshNear))
-			BedPlates:Clean(vapeEvents.BreakBlockEvent.Event:Connect(refreshNear))
+			BedPlates:Clean(aetherEvents.PlaceBlockEvent.Event:Connect(refreshNear))
+			BedPlates:Clean(aetherEvents.BreakBlockEvent.Event:Connect(refreshNear))
 			BedPlates:Clean(collectionService:GetInstanceAddedSignal('bed'):Connect(Added))
 			BedPlates:Clean(collectionService:GetInstanceRemovedSignal('bed'):Connect(function(v)
 				if Reference[v] then
@@ -27230,7 +27230,7 @@ run(function()
                         Size = UDim2.new(1, 89, 1, 52),
                         Position = UDim2.fromOffset(-48, -31),
                         BackgroundTransparency = 1,
-                        Image = getcustomasset('aetherv2/assets/new/blur.png'),
+                        Image = getcustomasset('aetherv3/assets/new/blur.png'),
                         ScaleType = Enum.ScaleType.Slice,
                         SliceCenter = Rect.new(52, 31, 261, 502)
                     }),
@@ -27488,7 +27488,7 @@ run(function()
         return false
     end
 
-    Breaker = vape.Categories.Minigames:CreateModule({
+    Breaker = aether.Categories.Minigames:CreateModule({
         Name = 'Breaker',
         Function = function(callback)
             if callback then
@@ -27695,7 +27695,7 @@ run(function()
     local Color
     local Type
 
-    ArmorTrims = vape.Categories.Legit:CreateModule({
+    ArmorTrims = aether.Categories.Legit:CreateModule({
         Name = 'ArmorTrims',
         Function = function(callback)
             if callback then
@@ -27759,7 +27759,7 @@ run(function()
 	return
     end
 
-    BedAlarm = vape.Categories.Legit:CreateModule({
+    BedAlarm = aether.Categories.Legit:CreateModule({
 	Name = 'BedAlarm',
 	Function = function(callback)
 		if callback then
@@ -27835,11 +27835,11 @@ run(function()
     local List
     local NameToId = {}
 
-    BedBreakEffect = vape.Categories.Legit:CreateModule({
+    BedBreakEffect = aether.Categories.Legit:CreateModule({
         Name = 'BedBreakEffect',
         Function = function(callback)
             if callback then
-                BedBreakEffect:Clean(vapeEvents.BedwarsBedBreak.Event:Connect(function(data)
+                BedBreakEffect:Clean(aetherEvents.BedwarsBedBreak.Event:Connect(function(data)
                     firesignal(bedwars.Client:Get('BedBreakEffectTriggered').instance.OnClientEvent, {
                         player = data.player,
                         position = data.bedBlockPosition * 3,
@@ -27869,7 +27869,7 @@ run(function()
     local Fill
     local Outline
 
-    BlockSelectorColor = vape.Categories.Legit:CreateModule({
+    BlockSelectorColor = aether.Categories.Legit:CreateModule({
         Name = 'BlockSelectorColor',
         Function = function(callback)
             if callback then
@@ -27898,7 +27898,7 @@ run(function()
 end)
 
 run(function()
-    vape.Categories.Legit:CreateModule({
+    aether.Categories.Legit:CreateModule({
         Name = 'CleanKit',
         Function = function(callback)
             if callback then
@@ -27918,7 +27918,7 @@ run(function()
     local old
     local Image
 
-    local Crosshair = vape.Categories.Legit:CreateModule({
+    local Crosshair = aether.Categories.Legit:CreateModule({
         Name = 'Crosshair',
         Function = function(callback)
             if callback then
@@ -27963,7 +27963,7 @@ run(function()
     tab = suc and tab or {}
     local oldvalues, oldfont = {}
 
-    DamageIndicator = vape.Categories.Legit:CreateModule({
+    DamageIndicator = aether.Categories.Legit:CreateModule({
         Name = 'DamageIndicator',
         Function = function(callback)
             if callback then
@@ -28060,7 +28060,7 @@ run(function()
         end)
     end
 
-    DeviceSpoofer = vape.Categories.Legit:CreateModule({
+    DeviceSpoofer = aether.Categories.Legit:CreateModule({
         Name = 'DeviceSpoofer',
         Function = function(callback)
             local controller = bedwars.UserInputController
@@ -28107,7 +28107,7 @@ run(function()
     local Value
     local old, old2
 
-    FOV = vape.Categories.Legit:CreateModule({
+    FOV = aether.Categories.Legit:CreateModule({
         Name = 'FOV',
         Function = function(callback)
             if callback then
@@ -28146,7 +28146,7 @@ run(function()
     local Visualizer
     local effects, util = {}, {}
 
-    FPSBoost = vape.Categories.Legit:CreateModule({
+    FPSBoost = aether.Categories.Legit:CreateModule({
         Name = 'FPSBoost',
         Function = function(callback)
             if callback then
@@ -28223,7 +28223,7 @@ run(function()
     local Color
     local done = {}
 
-    HitColor = vape.Categories.Legit:CreateModule({
+    HitColor = aether.Categories.Legit:CreateModule({
         Name = 'HitColor',
         Function = function(callback)
             if callback then
@@ -28257,7 +28257,7 @@ run(function()
 end)
 
 run(function()
-    vape.Categories.Legit:CreateModule({
+    aether.Categories.Legit:CreateModule({
         Name = 'HitFix',
         Function = function(callback)
             debug.setconstant(bedwars.SwordController.swingSwordAtMouse, 23, callback and 'raycast' or 'Raycast')
@@ -28275,7 +28275,7 @@ run(function()
         local HotbarApp = getRoactRender(require(lplr.PlayerScripts.TS.controllers.global.hotbar.ui['hotbar-app']).HotbarApp.render)
         local old, new = {}, {}
 
-        vape:Clean(function()
+        aether:Clean(function()
             for _, v in new do
                 table.clear(v)
             end
@@ -28306,7 +28306,7 @@ run(function()
             end
         end
 
-        Interface = vape.Categories.Legit:CreateModule({
+        Interface = aether.Categories.Legit:CreateModule({
             Name = 'Interface',
             Function = function(callback)
                 for i, v in (callback and new or old) do
@@ -28466,7 +28466,7 @@ run(function()
         end
     }
 
-    KillEffect = vape.Categories.Legit:CreateModule({
+    KillEffect = aether.Categories.Legit:CreateModule({
         Name = 'KillEffect',
         Function = function(callback)
             if callback then
@@ -28606,7 +28606,7 @@ run(function()
         effect:Destroy()
     end
 
-    PotionStatus = vape.Categories.Legit:CreateModule({
+    PotionStatus = aether.Categories.Legit:CreateModule({
         Name = 'PotionStatus',
         Tooltip = 'Shows you currently active effects',
         Function = function(callback)
@@ -28654,7 +28654,7 @@ run(function()
     local ReachDisplay
     local label
 
-    ReachDisplay = vape.Categories.Legit:CreateModule({
+    ReachDisplay = aether.Categories.Legit:CreateModule({
         Name = 'ReachDisplay',
         Function = function(callback)
             if callback then
@@ -28744,7 +28744,7 @@ run(function()
         end
     end
 
-    SongBeats = vape.Categories.Legit:CreateModule({
+    SongBeats = aether.Categories.Legit:CreateModule({
         Name = 'SongBeats',
         Function = function(callback)
             if callback then
@@ -28821,7 +28821,7 @@ run(function()
     local soundlist = {}
     local old
 
-    SoundChanger = vape.Categories.Legit:CreateModule({
+    SoundChanger = aether.Categories.Legit:CreateModule({
         Name = 'SoundChanger',
         Function = function(callback)
             if callback then
@@ -28906,7 +28906,7 @@ run(function()
         end
     end
 
-    KillfeedSpoofer = vape.Categories.Legit:CreateModule({
+    KillfeedSpoofer = aether.Categories.Legit:CreateModule({
         Name = 'KillfeedSpoofer',
         Function = function(callback)
             if callback and not oldkillfeed then
@@ -28956,7 +28956,7 @@ run(function()
     local TexturePacks
     local Pack
 
-    TexturePacks = vape.Categories.Legit:CreateModule({
+    TexturePacks = aether.Categories.Legit:CreateModule({
 	Name = 'TexturePack',
 	Function = function(callback)
 		if callback then
@@ -28987,7 +28987,7 @@ run(function()
         local old, new = {}, {}
         local oldkillfeed
 
-        vape:Clean(function()
+        aether:Clean(function()
             for _, v in new do
                 table.clear(v)
             end
@@ -29019,7 +29019,7 @@ run(function()
             end
         end
 
-        UICleanup = vape.Categories.Legit:CreateModule({
+        UICleanup = aether.Categories.Legit:CreateModule({
             Name = 'UICleanup',
             Function = function(callback)
                 for i, v in (callback and new or old) do
@@ -29141,7 +29141,7 @@ run(function()
     local Rots = {}
     local old, oldc1
 
-    Viewmodel = vape.Categories.Legit:CreateModule({
+    Viewmodel = aether.Categories.Legit:CreateModule({
         Name = 'Viewmodel',
         Function = function(callback)
             local viewmodel = gameCamera:FindFirstChild('Viewmodel')
@@ -29242,11 +29242,11 @@ run(function()
     local List
     local NameToId = {}
 
-    WinEffect = vape.Categories.Legit:CreateModule({
+    WinEffect = aether.Categories.Legit:CreateModule({
         Name = 'WinEffect',
         Function = function(callback)
             if callback then
-                WinEffect:Clean(vapeEvents.MatchEndEvent.Event:Connect(function()
+                WinEffect:Clean(aetherEvents.MatchEndEvent.Event:Connect(function()
                     for i, v in getconnections(bedwars.Client:Get('WinEffectTriggered').instance.OnClientEvent) do
                         if v.Function then
                             v.Function({
@@ -29308,7 +29308,7 @@ run(function()
         end
     end
 
-	ProximityPromptDuration = vape.Categories.Utility:CreateModule({
+	ProximityPromptDuration = aether.Categories.Utility:CreateModule({
 		Name = 'ProximityPromptDuration',
 		Function = function(callback)
 			if callback then
@@ -29349,7 +29349,7 @@ run(function()
 	local EmeraldToggle
 	local Reference = {}
 	local Folder = Instance.new('Folder')
-	Folder.Parent = vape.gui
+	Folder.Parent = aether.gui
 
 	local CollectionService = collectionService
 
@@ -29516,7 +29516,7 @@ run(function()
 		end
 	end
 
-	LootESP = vape.Categories.Render:CreateModule({
+	LootESP = aether.Categories.Render:CreateModule({
 		Name = 'LootESP',
 		Function = function(callback)
 			if callback then
@@ -29588,7 +29588,7 @@ run(function()
     local cachedHumanoid
     local lastValidationCheck = 0
 
-    NightmareEmote = vape.Categories.World:CreateModule({
+    NightmareEmote = aether.Categories.World:CreateModule({
         Name = "NightmareEmote",
         Function = function(call)
             if call then
@@ -29814,7 +29814,7 @@ run(function()
         return isHoldingItem({'tnt'})
     end
 
-    AutoCounter = vape.Categories.World:CreateModule({
+    AutoCounter = aether.Categories.World:CreateModule({
         Name = 'AutoCounter',
         Function = function(callback)
             if callback then
@@ -29972,7 +29972,7 @@ run(function()
     local removedConnection
     local trackedPrompts = {}
 
-    ProximityMaxDistance = vape.Categories.Utility:CreateModule({
+    ProximityMaxDistance = aether.Categories.Utility:CreateModule({
         Name = "ProximityExtender",
         Function = function(callback)
 
@@ -30090,7 +30090,7 @@ run(function()
 		end
 	end
 
-	Headless = vape.Categories.Utility:CreateModule({
+	Headless = aether.Categories.Utility:CreateModule({
 		PerformanceModeBlacklisted = true,
 		Name = 'Headless',
 		Tooltip = 'free headless 2026!!',
@@ -30166,7 +30166,7 @@ run(function()
 		end
 	end
 
-	ShadowRemover = vape.Categories.World:CreateModule({
+	ShadowRemover = aether.Categories.World:CreateModule({
 		Name = 'ShadowRemover',
 		Function = function(callback)
 			if callback then
@@ -30209,7 +30209,7 @@ end)
 
 run(function()
 	local WhiteHits
-	WhiteHits = vape.Categories.Legit:CreateModule({
+	WhiteHits = aether.Categories.Legit:CreateModule({
 		Name = "WhiteHits",
 		Function = function(callback)
 			if callback then
@@ -30293,7 +30293,7 @@ run(function()
 		return count
 	end
 
-	RemoveNeon = vape.Categories.World:CreateModule({
+	RemoveNeon = aether.Categories.World:CreateModule({
 		Name = 'RemoveNeon',
 		Function = function(callback)
 			if callback then
@@ -30589,7 +30589,7 @@ run(function()
 		table.insert(blockMonitorConnections, cleanupConn)
 	end
 
-	PotatoMode = vape.Categories.World:CreateModule({
+	PotatoMode = aether.Categories.World:CreateModule({
 		Name = 'PotatoMode',
 		Function = function(callback)
 			if callback then
@@ -30615,7 +30615,7 @@ run(function()
 	local lastLookVector = gameCamera.CFrame.LookVector
 	local motionBlurConn = nil
 
-	MotionBlur = vape.Categories.Legit:CreateModule({
+	MotionBlur = aether.Categories.Legit:CreateModule({
 		Name = 'MotionBlur',
 		Function = function(callback)
 			if callback then
@@ -30685,7 +30685,7 @@ run(function()
 	}
 	local customMouseIcon = {Enabled = false}
 	local customIcon = {Value = ''}
-	CustomCursor = vape.Categories.Utility:CreateModule({
+	CustomCursor = aether.Categories.Utility:CreateModule({
 		Name = 'CustomCursor',
 		Tooltip = 'changes your cursor\'s image',
 		Function = function(callback)
@@ -30737,12 +30737,12 @@ end)
 run(function()
 	local AutoEmote
 	if not remotes.Emote then remotes.Emote = "Emote" end
-	AutoEmote = vape.Categories.Utility:CreateModule({
+	AutoEmote = aether.Categories.Utility:CreateModule({
 		Name = "AutoEmote",
 		Function = function(callback) end,
 		Tooltip = "only plays bed break emote on kill"
 	})
-	AutoEmote:Clean(vapeEvents.EntityDeathEvent.Event:Connect(function(deathTable)
+	AutoEmote:Clean(aetherEvents.EntityDeathEvent.Event:Connect(function(deathTable)
 		local killer = playersService:GetPlayerFromCharacter(deathTable.fromEntity)
 		local killed = playersService:GetPlayerFromCharacter(deathTable.entityInstance)
 		if killer == lplr and killed and killed ~= lplr then
@@ -30842,7 +30842,7 @@ run(function()
 		end)
 	end
 
-	NameTagSpoofer = vape.Categories.Render:CreateModule({
+	NameTagSpoofer = aether.Categories.Render:CreateModule({
 		Name = 'NameTagSpoofer',
 		Tooltip = 'script made by sleepvs w mans',
 		Function = function(callback)
@@ -31664,7 +31664,7 @@ run(function()
 		end
 	end)
 
-	Aura = vape.Categories.Render:CreateModule({
+	Aura = aether.Categories.Render:CreateModule({
 		Name = 'Aura',
 		Tooltip = 'skid = aura !! i love this module',
 		Function = function(callback)
@@ -31726,7 +31726,7 @@ run(function()
     local blockSelectorColor = Color3.fromRGB(255, 255, 255)
     local conn
 
-    local BlockColor = vape.Categories.Render:CreateModule({
+    local BlockColor = aether.Categories.Render:CreateModule({
         Name = 'BlockSelectorColor',
         Tooltip = 'change your block placement outline color',
         Function = function(enabled)
@@ -31756,7 +31756,7 @@ run(function()
 end)
 
 run(function()
-    local ChatNameColor = vape.Categories.Render:CreateModule({
+    local ChatNameColor = aether.Categories.Render:CreateModule({
         Name = 'ChatNameColor',
         Tooltip = 'change your chat name color',
         Function = function(enabled) end
@@ -31816,7 +31816,7 @@ run(function()
         end
     end
 
-    local PlayerOutline = vape.Categories.Render:CreateModule({
+    local PlayerOutline = aether.Categories.Render:CreateModule({
         Name = 'PlayerOutline',
         Tooltip = 'adds outline to all players',
         Function = function(enabled)
@@ -32167,7 +32167,7 @@ run(function()
 	end
 
 	shared.ACMODVIEWENABLED = false
-	AC_MOD_View.moduleInstance = vape.Categories.World:CreateModule({
+	AC_MOD_View.moduleInstance = aether.Categories.World:CreateModule({
 		Name = "ACMODView",
 		Function = function(call)
 			shared.ACMODVIEWENABLED = call
@@ -32242,7 +32242,7 @@ run(function()
         inputService.MouseIconEnabled = not shouldHide
     end
 
-    InvisibleCursor = vape.Categories.Utility:CreateModule({
+    InvisibleCursor = aether.Categories.Utility:CreateModule({
         Name = 'InvisibleCursor',
         Function = function(callback)
             if callback then
@@ -32255,7 +32255,7 @@ run(function()
 
                 renderConnection = runService.RenderStepped:Connect(updateCursor)
 
-                InvisibleCursor:Clean(vapeEvents.InventoryChanged.Event:Connect(updateCursor))
+                InvisibleCursor:Clean(aetherEvents.InventoryChanged.Event:Connect(updateCursor))
             else
                 isActive = false
 
@@ -32347,7 +32347,7 @@ run(function()
         setLegacyAnimation(shouldEnable)
     end
 
-    LegacyAnimation = vape.Categories.Render:CreateModule({
+    LegacyAnimation = aether.Categories.Render:CreateModule({
         Name = 'LegacyAnimation',
         Function = function(callback)
             enabled = callback
@@ -32390,7 +32390,7 @@ run(function()
 		end
 	end
 
-	RemovePlayerLevel = vape.Categories.Render:CreateModule({
+	RemovePlayerLevel = aether.Categories.Render:CreateModule({
 		Name = 'RemovePlayerLevelUI',
 		Function = function(callback)
 			if callback then
@@ -32504,7 +32504,7 @@ run(function()
 		table.clear(deletedNumTeamMembers)
 	end
 
-	OG4v4v4v4 = vape.Categories.Render:CreateModule({
+	OG4v4v4v4 = aether.Categories.Render:CreateModule({
 		Name = 'OG4v4v4v4',
 		Function = function(callback)
 			if callback then
@@ -34440,7 +34440,7 @@ run(function()
 			local session = {beds = {}, nextUpdate = 0, pendingUntil = 0, threats = {}}
 			activeSession = session
 
-			AutoCaitlyn:Clean(vapeEvents.EntityDamageEvent.Event:Connect(function(damage)
+			AutoCaitlyn:Clean(aetherEvents.EntityDamageEvent.Event:Connect(function(damage)
 				if activeSession ~= session then return end
 				local source = asEntity(damage.fromEntity)
 				if damage.entityInstance == lplr.Character and source and source.Player then
@@ -34453,7 +34453,7 @@ run(function()
 				end
 			end))
 
-			AutoCaitlyn:Clean(vapeEvents.BedwarsBedBreak.Event:Connect(function()
+			AutoCaitlyn:Clean(aetherEvents.BedwarsBedBreak.Event:Connect(function()
 				table.clear(session.beds)
 			end))
 			AutoCaitlyn:Clean(entitylib.Events.LocalAdded:Connect(function()
@@ -35085,15 +35085,15 @@ run(function()
 	for _, plr in playersService:GetPlayers() do
 		watch(plr)
 	end
-	vape:Clean(playersService.PlayerAdded:Connect(watch))
-	vape:Clean(playersService.PlayerRemoving:Connect(function(plr)
+	aether:Clean(playersService.PlayerAdded:Connect(watch))
+	aether:Clean(playersService.PlayerRemoving:Connect(function(plr)
 		if connections[plr] then
 			connections[plr]:Disconnect()
 			connections[plr] = nil
 		end
 		rebuild()
 	end))
-	vape:Clean(function()
+	aether:Clean(function()
 		for _, connection in connections do
 			connection:Disconnect()
 		end
@@ -35554,15 +35554,15 @@ run(function()
 	for _, plr in playersService:GetPlayers() do
 		watch(plr)
 	end
-	vape:Clean(playersService.PlayerAdded:Connect(watch))
-	vape:Clean(playersService.PlayerRemoving:Connect(function(plr)
+	aether:Clean(playersService.PlayerAdded:Connect(watch))
+	aether:Clean(playersService.PlayerRemoving:Connect(function(plr)
 		if connections[plr] then
 			connections[plr]:Disconnect()
 			connections[plr] = nil
 		end
 		rebuild()
 	end))
-	vape:Clean(function()
+	aether:Clean(function()
 		for _, connection in connections do
 			connection:Disconnect()
 		end
@@ -35579,7 +35579,7 @@ run(function()
 		Category = 'Auto',
 		Function = function(callback)
 			if not callback then return end
-			AutoNyx:Clean(vapeEvents.EntityDamageEvent.Event:Connect(function(damage)
+			AutoNyx:Clean(aetherEvents.EntityDamageEvent.Event:Connect(function(damage)
 				-- damageType 0 is a melee hit. Only ours counts, and only while somebody is
 				-- still close enough for the ability to land on them.
 				if damage.damageType ~= 0 then return end

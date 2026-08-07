@@ -1,7 +1,7 @@
 local compile = loadstring
 local loadstring = function(...)
 	local res, err = compile(...)
-	if err and vape then vape:CreateNotification('AetherV2', 'Failed to load : '..err, 30, 'alert') end
+	if err and aether then aether:CreateNotification('AetherV3', 'Failed to load : '..err, 30, 'alert') end
 	return res
 end
 local isfile = isfile or function(file)
@@ -10,9 +10,9 @@ local isfile = isfile or function(file)
 end
 local function downloadFile(path, func)
 	if not isfile(path) then
-		local suc, res = pcall(function() return game:HttpGet('https://raw.githubusercontent.com/plutoxqqqq/AetherV2/'..readfile('aetherv2/profiles/commit.txt')..'/'..select(1, path:gsub('aetherv2/', '')), true) end)
+		local suc, res = pcall(function() return game:HttpGet('https://raw.githubusercontent.com/plutoxqqqq/AetherV3/'..readfile('aetherv3/profiles/commit.txt')..'/'..select(1, path:gsub('aetherv3/', '')), true) end)
 		if not suc or res == '404: Not Found' then error(res) end
-		if path:find('.lua') then res = '--This watermark is used to delete the file if its cached, remove it to make the file persist after vape updates.\n'..res end
+		if path:find('.lua') then res = '--This watermark is used to delete the file if its cached, remove it to make the file persist after aether updates.\n'..res end
 		writefile(path, res)
 	end
 	return (func or readfile)(path)
@@ -33,13 +33,13 @@ local contextService = cloneref(game:GetService('ContextActionService'))
 local gameCamera = workspace.CurrentCamera
 local lplr = playersService.LocalPlayer
 
-local vape = shared.vape
-local entitylib = vape.Libraries.entity
-local whitelist = vape.Libraries.whitelist
-local prediction = vape.Libraries.prediction
-local targetinfo = vape.Libraries.targetinfo
-local sessioninfo = vape.Libraries.sessioninfo
-local vm = loadstring(downloadFile('aetherv2/libraries/vm.lua'), 'vm')()
+local aether = shared.Aether
+local entitylib = aether.Libraries.entity
+local whitelist = aether.Libraries.whitelist
+local prediction = aether.Libraries.prediction
+local targetinfo = aether.Libraries.targetinfo
+local sessioninfo = aether.Libraries.sessioninfo
+local vm = loadstring(downloadFile('aetherv3/libraries/vm.lua'), 'vm')()
 
 local jb = {}
 local InfNitro = {Enabled = false}
@@ -70,10 +70,10 @@ local function isArrested(name)
 end
 
 local function isFriend(plr, recolor)
-	if vape.Categories.Friends.Options['Use friends'].Enabled then
-		local friend = table.find(vape.Categories.Friends.ListEnabled, plr.Name) and true
+	if aether.Categories.Friends.Options['Use friends'].Enabled then
+		local friend = table.find(aether.Categories.Friends.ListEnabled, plr.Name) and true
 		if recolor then
-			friend = friend and vape.Categories.Friends.Options['Recolor visuals'].Enabled
+			friend = friend and aether.Categories.Friends.Options['Recolor visuals'].Enabled
 		end
 		return friend
 	end
@@ -98,11 +98,11 @@ local function isIllegal(ent)
 end
 
 local function isTarget(plr)
-	return table.find(vape.Categories.Targets.ListEnabled, plr.Name) and true
+	return table.find(aether.Categories.Targets.ListEnabled, plr.Name) and true
 end
 
 local function notif(...)
-	return vape:CreateNotification(...)
+	return aether:CreateNotification(...)
 end
 
 run(function()
@@ -258,8 +258,8 @@ run(function()
 	}
 
 	if not jb.VehicleController.toggleLocalLocked or not jb.VehicleController.NitroShopVisible then
-		repeat task.wait() until (jb.VehicleController.toggleLocalLocked and jb.VehicleController.NitroShopVisible) or vape.Loaded == nil
-		if vape.Loaded == nil then return end
+		repeat task.wait() until (jb.VehicleController.toggleLocalLocked and jb.VehicleController.NitroShopVisible) or aether.Loaded == nil
+		if aether.Loaded == nil then return end
 	end
 	local remotetable = debug.getupvalue(jb.VehicleController.toggleLocalLocked, 2)
 	local fireserver, hook = remotetable.FireServer
@@ -319,7 +319,7 @@ run(function()
 
 	function jb:FireServer(id, ...)
 		if not remotes[id] then
-			notif('AetherV2', 'Failed to find remote ('..id..')', 10, 'alert')
+			notif('AetherV3', 'Failed to find remote ('..id..')', 10, 'alert')
 			return
 		end
 		return hook(remotetable, remotes[id], ...)
@@ -355,7 +355,7 @@ run(function()
 		end)
 	end
 
-	vape:Clean(function()
+	aether:Clean(function()
 		table.clear(remotes)
 		table.clear(jb)
 		hookfunction(fireserver, hook)
@@ -366,7 +366,7 @@ run(function()
 end)
 
 for _, v in {'Reach', 'TriggerBot', 'Disabler', 'AntiVoid', 'HitBoxes', 'Killaura', 'MurderMystery'} do
-	vape:Remove(v)
+	aether:Remove(v)
 end
 
 --[[
@@ -374,7 +374,7 @@ end
 ]]
 
 run(function()
-    vape.Categories.Combat:CreateModule({
+    aether.Categories.Combat:CreateModule({
     	Name = 'ForceHeadshot',
     	Function = function(callback)
     		if callback then
@@ -408,7 +408,7 @@ run(function()
     local ProjectileRaycast = RaycastParams.new()
     ProjectileRaycast.RespectCanCollide = true
 
-    SilentAim = vape.Categories.Combat:CreateModule({
+    SilentAim = aether.Categories.Combat:CreateModule({
     	Name = 'SilentAim',
     	Function = function(callback)
     		if CircleObject then
@@ -494,7 +494,7 @@ run(function()
     			CircleObject = Drawing.new('Circle')
     			CircleObject.Filled = CircleFilled.Enabled
     			CircleObject.Color = Color3.fromHSV(CircleColor.Hue, CircleColor.Sat, CircleColor.Value)
-    			CircleObject.Position = vape.gui.AbsoluteSize / 2
+			CircleObject.Position = aether.gui.AbsoluteSize / 2
     			CircleObject.Radius = Range.Value
     			CircleObject.NumSides = 100
     			CircleObject.Transparency = 1 - CircleTransparency.Value
@@ -554,7 +554,7 @@ end)
 run(function()
     local AutoArrest
 
-    AutoArrest = vape.Categories.Blatant:CreateModule({
+    AutoArrest = aether.Categories.Blatant:CreateModule({
     	Name = 'AutoArrest',
     	Function = function(callback)
     		if callback then
@@ -642,7 +642,7 @@ run(function()
     	return allowed
     end
 
-    AutoPop = vape.Categories.Blatant:CreateModule({
+    AutoPop = aether.Categories.Blatant:CreateModule({
     	Name = 'AutoPop',
     	Function = function(callback)
     		if callback then
@@ -676,7 +676,7 @@ end)
 run(function()
     local AutoPunch
 
-    AutoPunch = vape.Categories.Blatant:CreateModule({
+    AutoPunch = aether.Categories.Blatant:CreateModule({
     	Name = 'AutoPunch',
     	Function = function(callback)
     		if callback then
@@ -697,7 +697,7 @@ run(function()
     local AutoTaze
     local HandCheck
 
-    AutoTaze = vape.Categories.Blatant:CreateModule({
+    AutoTaze = aether.Categories.Blatant:CreateModule({
     	Name = 'AutoTaze',
     	Function = function(callback)
     		if callback then
@@ -730,11 +730,11 @@ run(function()
 end)
 
 run(function()
-    LazerGodmode = vape.Categories.Blatant:CreateModule({ Name = 'LazerGodmode' })
+    LazerGodmode = aether.Categories.Blatant:CreateModule({ Name = 'LazerGodmode' })
 end)
 
 run(function()
-    vape.Categories.Blatant:CreateModule({
+    aether.Categories.Blatant:CreateModule({
     	Name = 'NoFall',
     	Function = function(callback)
     		debug.setconstant(debug.getupvalue(jb.FallingController.Init, 20), 9, callback and 'Archivable' or 'Sit')
@@ -751,7 +751,7 @@ run(function()
     local nitrotable = debug.getupvalue(jb.VehicleController.NitroShopVisible, 1)
     local oldnitro
 
-    InfNitro = vape.Categories.Utility:CreateModule({
+    InfNitro = aether.Categories.Utility:CreateModule({
     	Name = 'InfiniteNitro',
     	Function = function(callback)
     		if callback then
@@ -772,7 +772,7 @@ run(function()
 end)
 
 run(function()
-    vape.Categories.Utility:CreateModule({
+    aether.Categories.Utility:CreateModule({
     	Name = 'InstantAction',
     	Function = function(callback)
     		debug.setconstant(jb.CircleAction.Press, 3, callback and 'Timeda' or 'Timed')
@@ -782,7 +782,7 @@ run(function()
 end)
 
 run(function()
-    vape.Categories.Utility:CreateModule({
+    aether.Categories.Utility:CreateModule({
     	Name = 'KeySpoofer',
     	Function = function(callback)
     		if callback then

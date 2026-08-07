@@ -3,7 +3,7 @@
 local run = function(func)
 	local success, result = xpcall(func, debug and debug.traceback or tostring)
 	if not success then
-		warn('[AetherV2] Skipped a module during startup: '..tostring(result))
+		warn('[AetherV3] Skipped a module during startup: '..tostring(result))
 	end
 	return success
 end
@@ -17,13 +17,13 @@ local runService = cloneref(game:GetService('RunService'))
 local httpService = cloneref(game:GetService('HttpService'))
 
 local lplr = playersService.LocalPlayer
-local vape = shared.vape
-local entitylib = vape.Libraries.entity
-local sessioninfo = vape.Libraries.sessioninfo
+local aether = shared.Aether
+local entitylib = aether.Libraries.entity
+local sessioninfo = aether.Libraries.sessioninfo
 local bedwars = {}
 
 local function notif(...)
-	return vape:CreateNotification(...)
+	return aether:CreateNotification(...)
 end
 
 run(function()
@@ -133,7 +133,7 @@ run(function()
 	local wins = sessioninfo:AddItem('Wins')
 	local games = sessioninfo:AddItem('Games')
 
-	vape:Clean(function()
+	aether:Clean(function()
 		table.clear(bedwars)
 	end)
 end)
@@ -147,9 +147,9 @@ end
 getgenv().getAeroTier = function(player)
     return getAccountTier(player)
 end  
-for _, v in vape.Modules do
+for _, v in aether.Modules do
 	if v.Category == 'Combat' or v.Category == 'Render' then
-		vape:Remove(i)
+		aether:Remove(i)
 	end
 end
 
@@ -157,7 +157,7 @@ run(function()
 	local Sprint
 	local old
 	
-	Sprint = vape.Categories.Combat:CreateModule({
+	Sprint = aether.Categories.Combat:CreateModule({
 		Name = 'Sprint',
 		Function = function(callback)
 			if callback then
@@ -183,7 +183,7 @@ end)
 run(function()
 	local AutoGamble
 	
-	AutoGamble = vape.Categories.Minigames:CreateModule({
+	AutoGamble = aether.Categories.Minigames:CreateModule({
 		Name = 'AutoGamble',
 		Function = function(callback)
 			if callback then
@@ -220,7 +220,7 @@ end)
 	
 run(function()
     local ok, err = pcall(function()
-        repeat task.wait() until vape and vape.Categories and vape.Categories.Render
+        repeat task.wait() until aether and aether.Categories and aether.Categories.Render
         local ClanModule
         local ClanColor = Color3.new(1, 1, 1)
         local enabledFlag = false
@@ -288,7 +288,7 @@ run(function()
             end
         end
         
-        ClanModule = vape.Categories.Render:CreateModule({
+        ClanModule = aether.Categories.Render:CreateModule({
             Name = "CustomClanTag",
             HoverText = "Click tags to equip/unequip",
             Function = function(state)
@@ -330,7 +330,7 @@ end)
 
 run(function()
 	local ViewMatchHistory
-	ViewMatchHistory = vape.Categories.Utility:CreateModule({
+	ViewMatchHistory = aether.Categories.Utility:CreateModule({
 		Name = "ViewMatchHistory",
 		Function = function(callback)
 			if callback then
@@ -714,7 +714,7 @@ run(function()
 		end
 	end
 	
-	OGNameTags = vape.Categories.Render:CreateModule({
+	OGNameTags = aether.Categories.Render:CreateModule({
 		Name = 'OGNameTags',
 		Function = function(callback)
 			if callback then
@@ -757,7 +757,7 @@ run(function()
 	local list
 	local TABLE = {}
 	local old
-	TC = vape.Categories.Render:CreateModule({
+	TC = aether.Categories.Render:CreateModule({
 	Name = "TitleChanger",
 	Function = function(callback)
 		if callback then
@@ -917,7 +917,7 @@ run(function()
 		savedFullLeaderboards = nil
 	end
 
-	LeaderboardSpoof = vape.Categories.Minigames:CreateModule({
+	LeaderboardSpoof = aether.Categories.Minigames:CreateModule({
 		Name = "LeaderboardSpoof",
 		Function = function(enabled)
 			if enabled then doDispatch() else doRevert() end
@@ -1086,7 +1086,7 @@ run(function()
 		end
 	end
 
-	NametagSpoof = vape.Categories.Render:CreateModule({
+	NametagSpoof = aether.Categories.Render:CreateModule({
 		Name = "NametagSpoof",
 		Function = function(callback)
 			if callback then
@@ -1132,7 +1132,7 @@ run(function()
     local cachedHumanoid
     local lastValidationCheck = 0
     
-    NightmareEmote = vape.Categories.World:CreateModule({
+    NightmareEmote = aether.Categories.World:CreateModule({
         Name = "NightmareEmote",
         Function = function(call)
             if call then
@@ -1401,7 +1401,7 @@ run(function()
 		if ppLoop then task.cancel(ppLoop) ppLoop = nil end
 	end
 
-	PlayerProfileSpoof = vape.Categories.Minigames:CreateModule({
+	PlayerProfileSpoof = aether.Categories.Minigames:CreateModule({
 		Name = "PlayerProfileSpoof",
 		Function = function(callback)
 			if callback then ppStartLoop() else ppCleanup() end
@@ -1437,7 +1437,7 @@ run(function()
     local originalLevel = nil
     local customLevel = 1
 
-    SetPlayerLevel = vape.Categories.Render:CreateModule({
+    SetPlayerLevel = aether.Categories.Render:CreateModule({
         Name = "SetPlayerLevel",
         Function = function(state)
             if state then
@@ -1500,7 +1500,7 @@ run(function()
         originalWins = nil
     end
 
-    SetPlayerWins = vape.Categories.Minigames:CreateModule({
+    SetPlayerWins = aether.Categories.Minigames:CreateModule({
         Name = "SetPlayerWins",
         Function = function(state)
             if state then
@@ -1541,7 +1541,7 @@ run(function()
         DoesExist = nil,
     }
 
-    WinstreakSpoofer = vape.Categories.Minigames:CreateModule({
+    WinstreakSpoofer = aether.Categories.Minigames:CreateModule({
         Name = 'WinstreakSpoofer',
         Tooltip = 'Modifies/Adds your winstreak (client‑sided)',
         Function = function(callback)
@@ -1699,7 +1699,7 @@ run(function()
 		end
 	end
 
-	Headless = vape.Categories.Utility:CreateModule({
+	Headless = aether.Categories.Utility:CreateModule({
 		PerformanceModeBlacklisted = true,
 		Name = 'Headless',
 		Tooltip = 'free headless 2026',
@@ -1953,7 +1953,7 @@ run(function()
 	end
 
 	local sbsLoop = nil
-	StatsBoardSpoof = vape.Categories.Minigames:CreateModule({
+	StatsBoardSpoof = aether.Categories.Minigames:CreateModule({
 		Name = "StatsBoardSpoof",
 		Tooltip = "Spoof your StatsBoard display (client-sided only)",
 		Function = function(enabled)
@@ -2154,7 +2154,7 @@ run(function()
         end
     end
 
-    LARPKits = vape.Categories.Minigames:CreateModule({
+    LARPKits = aether.Categories.Minigames:CreateModule({
         Name = "LARPKits",
         Tooltip = "Client‑side only – moves kits visually to 'Owned' in lobby",
         Function = function(callback)
@@ -2210,7 +2210,7 @@ run(function()
     local Delay
     local Notify
 
-    local STATE_FILE = 'aetherv2/profiles/autowin.json'
+    local STATE_FILE = 'aetherv3/profiles/autowin.json'
 
     local function readState()
         if not isfile or not isfile(STATE_FILE) then return nil end
@@ -2282,7 +2282,7 @@ run(function()
         return ok and allowed
     end
 
-    AutoQueue = vape.Categories.Utility:CreateModule({
+    AutoQueue = aether.Categories.Utility:CreateModule({
         Name = 'AutoQueue',
         Function = function(callback)
             if callback then

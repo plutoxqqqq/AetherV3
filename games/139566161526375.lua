@@ -13,10 +13,10 @@ local runService = cloneref(game:GetService('RunService'))
 
 local gameCamera = workspace.CurrentCamera
 local lplr = playersService.LocalPlayer
-local vape = shared.vape
-local entitylib = vape.Libraries.entity
-local targetinfo = vape.Libraries.targetinfo
-local prediction = vape.Libraries.prediction
+local aether = shared.Aether
+local entitylib = aether.Libraries.entity
+local targetinfo = aether.Libraries.targetinfo
+local prediction = aether.Libraries.prediction
 
 local bd = {}
 local store = {
@@ -29,7 +29,7 @@ local function getTool()
 end
 
 local function notif(...)
-	return vape:CreateNotification(...)
+	return aether:CreateNotification(...)
 end
 
 local function parsePositions(v, func)
@@ -76,13 +76,13 @@ run(function()
 
 	task.spawn(function()
 		local map = workspace:WaitForChild('Map', 99999)
-		if map and vape.Loaded ~= nil then
-			vape:Clean(map.DescendantAdded:Connect(function(v)
+		if map and aether.Loaded ~= nil then
+			aether:Clean(map.DescendantAdded:Connect(function(v)
 				parsePositions(v, function(pos)
 					store.blocks[pos] = v
 				end)
 			end))
-			vape:Clean(map.DescendantRemoving:Connect(function(v)
+			aether:Clean(map.DescendantRemoving:Connect(function(v)
 				parsePositions(v, function(pos)
 					if store.blocks[pos] == v then
 						store.blocks[pos] = nil
@@ -99,14 +99,14 @@ run(function()
 		end
 	end)
 
-	vape:Clean(function()
+	aether:Clean(function()
 		table.clear(store.blocks)
 		table.clear(store)
 	end)
 end)
 
 for _, v in { 'Reach', 'SilentAim', 'Disabler', 'HitBoxes', 'MurderMystery', 'AutoRejoin' } do
-	vape:Remove(v)
+	aether:Remove(v)
 end
 
 --[[
@@ -117,7 +117,7 @@ run(function()
     local AutoClicker
     local CPS
 
-    AutoClicker = vape.Categories.Combat:CreateModule({
+    AutoClicker = aether.Categories.Combat:CreateModule({
     	Name = 'AutoClicker',
     	Function = function(callback)
     		if callback then
@@ -144,7 +144,7 @@ end)
 run(function()
     local old
 
-    vape.Categories.Combat:CreateModule({
+    aether.Categories.Combat:CreateModule({
     	Name = 'Reach',
     	Function = function(callback)
     		if callback then
@@ -190,7 +190,7 @@ run(function()
     	return applyKnockback(velo, ...)
     end
 
-    Velocity = vape.Categories.Combat:CreateModule({
+    Velocity = aether.Categories.Combat:CreateModule({
     	Name = 'Velocity',
     	Function = function(callback)
     		if callback then
@@ -241,7 +241,7 @@ end)
 run(function()
     local old
 
-    vape.Categories.Blatant:CreateModule({
+    aether.Categories.Blatant:CreateModule({
     	Name = 'Criticals',
     	Function = function(callback)
     		if callback then
@@ -264,7 +264,7 @@ end)
 run(function()
     local old
 
-    vape.Categories.Blatant:CreateModule({
+    aether.Categories.Blatant:CreateModule({
     	Name = 'InvMove',
     	Function = function(callback)
     		if callback then
@@ -321,7 +321,7 @@ run(function()
     	return getTool()
     end
 
-    Killaura = vape.Categories.Blatant:CreateModule({
+    Killaura = aether.Categories.Blatant:CreateModule({
     	Name = 'Killaura',
     	Function = function(callback)
     		if callback then
@@ -375,11 +375,11 @@ run(function()
     								SwingDelay = tick() + 0.25
     								entitylib.character.Humanoid.Animator:LoadAnimation(tool.Animations.Swing):Play()
 
-    								if vape.ThreadFix then
+								if aether.ThreadFix then
     									setthreadidentity(2)
     								end
     								bd.ViewmodelController:PlayAnimation(tool.Name)
-    								if vape.ThreadFix then
+								if aether.ThreadFix then
     									setthreadidentity(8)
     								end
     							end
@@ -495,7 +495,7 @@ run(function()
     				box.Size = Vector3.new(3, 5, 3)
     				box.CFrame = CFrame.new(0, -0.5, 0)
     				box.ZIndex = 0
-    				box.Parent = vape.gui
+				box.Parent = aether.gui
     				Boxes[i] = box
     			end
     		else
@@ -638,7 +638,7 @@ end)
 run(function()
     local old
 
-    vape.Categories.Blatant:CreateModule({
+    aether.Categories.Blatant:CreateModule({
     	Name = 'NoFall',
     	Function = function(callback)
     		if callback then
@@ -655,7 +655,7 @@ end)
 run(function()
     local old
 
-    vape.Categories.Blatant:CreateModule({
+    aether.Categories.Blatant:CreateModule({
     	Name = 'NoSlowdown',
     	Function = function(callback)
     		local func = debug.getproto(bd.MovementController.KnitStart, 5)
@@ -714,7 +714,7 @@ run(function()
     	return old(...)
     end
 
-    local ProjectileAimbot = vape.Categories.Blatant:CreateModule({
+    local ProjectileAimbot = aether.Categories.Blatant:CreateModule({
     	Name = 'ProjectileAimbot',
     	Function = function(callback)
     		if callback then
@@ -748,7 +748,7 @@ run(function()
     local AutoPlay
     local Delay
 
-    AutoPlay = vape.Categories.Utility:CreateModule({
+    AutoPlay = aether.Categories.Utility:CreateModule({
     	Name = 'AutoPlay',
     	Function = function(callback)
     		if callback then
@@ -861,7 +861,7 @@ run(function()
     	end
     end
 
-    Scaffold = vape.Categories.Utility:CreateModule({
+    Scaffold = aether.Categories.Utility:CreateModule({
     	Name = 'Scaffold',
     	Function = function(callback)
     		if callback then
@@ -1064,7 +1064,7 @@ run(function()
     	return shop, items, upgrades
     end
 
-    AutoBuy = vape.Categories.Inventory:CreateModule({
+    AutoBuy = aether.Categories.Inventory:CreateModule({
     	Name = 'AutoBuy',
     	Function = function(callback)
     		if callback then
@@ -1225,7 +1225,7 @@ run(function()
     	end
     end
 
-    Breaker = vape.Categories.Minigames:CreateModule({
+    Breaker = aether.Categories.Minigames:CreateModule({
     	Name = 'Breaker',
     	Function = function(callback)
     		if callback then

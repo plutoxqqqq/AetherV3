@@ -11,9 +11,9 @@ local coreGui = cloneref(game:GetService('CoreGui'))
 
 local gameCamera = workspace.CurrentCamera
 local lplr = playersService.LocalPlayer
-local vape = shared.vape
-local entitylib = vape.Libraries.entity
-local targetinfo = vape.Libraries.targetinfo
+local aether = shared.Aether
+local entitylib = aether.Libraries.entity
+local targetinfo = aether.Libraries.targetinfo
 local arena = {}
 
 local oldhit
@@ -36,7 +36,7 @@ local function calculateMoveVector()
 end
 
 local function notif(...)
-	return vape:CreateNotification(...)
+	return aether:CreateNotification(...)
 end
 
 run(function()
@@ -46,9 +46,9 @@ run(function()
 		repeat
 			env = getsenv(charscript)
 			task.wait()
-		until env and env.startHit or vape.Loaded == nil
+		until env and env.startHit or aether.Loaded == nil
 
-		if vape.Loaded == nil then return end
+		if aether.Loaded == nil then return end
 	end
 
 	arena = {
@@ -193,7 +193,7 @@ run(function()
 end)
 
 for _, v in {'AimAssist', 'Reach', 'SilentAim', 'AntiVoid', 'Desync', 'Invisible', 'Jesus', 'MouseTP', 'Phase', 'SpinBot', 'Swim', 'TargetStrafe', 'AnimationPlayer', 'AntiRagdoll', 'ChatSpammer', 'Disabler', 'StateSpoofer', 'Freecam', 'Gravity', 'Parkour', 'SafeWalk', 'MurderMystery'} do
-	vape:Remove(v)
+	aether:Remove(v)
 end
 
 --[[
@@ -218,7 +218,7 @@ run(function()
     	end)
     end
     
-    AutoClicker = vape.Categories.Combat:CreateModule({
+    AutoClicker = aether.Categories.Combat:CreateModule({
     	Name = 'AutoClicker',
     	Function = function(callback)
     		if callback then
@@ -257,7 +257,7 @@ run(function()
     local Value
     local old
     
-    Reach = vape.Categories.Combat:CreateModule({
+    Reach = aether.Categories.Combat:CreateModule({
         Name = 'Reach',
         Function = function(callback)
             if callback then
@@ -292,7 +292,7 @@ end)
 run(function()
     local Sprint
     
-    Sprint = vape.Categories.Combat:CreateModule({
+    Sprint = aether.Categories.Combat:CreateModule({
     	Name = 'Sprint',
     	Function = function(callback)
     		if callback then
@@ -334,7 +334,7 @@ run(function()
         return old(...)
     end
     
-    Velocity = vape.Categories.Combat:CreateModule({
+    Velocity = aether.Categories.Combat:CreateModule({
         Name = 'Velocity',
         Function = function(callback)
             if callback then
@@ -382,7 +382,7 @@ end)
 ]]
 
 run(function()
-    vape.Categories.Blatant:CreateModule({
+    aether.Categories.Blatant:CreateModule({
     	Name = 'AutoBlock',
     	Function = function(callback)
     		if callback then
@@ -417,7 +417,7 @@ run(function()
     local VerticalValue
     local up, down = 0, 0
     
-    Fly = vape.Categories.Blatant:CreateModule({
+    Fly = aether.Categories.Blatant:CreateModule({
     	Name = 'Fly',
     	Function = function(callback)
     		if callback then
@@ -493,7 +493,7 @@ run(function()
     	end
     end
     
-    HighJump = vape.Categories.Blatant:CreateModule({
+    HighJump = aether.Categories.Blatant:CreateModule({
     	Name = 'HighJump',
     	Function = function(callback)
     		if callback then
@@ -533,7 +533,7 @@ run(function()
     local Expand
     local modified = {}
     
-    HitBoxes = vape.Categories.Blatant:CreateModule({
+    HitBoxes = aether.Categories.Blatant:CreateModule({
         Name = 'HitBoxes',
         Function = function(callback)
             if callback then
@@ -599,7 +599,7 @@ run(function()
     	return true, true
     end
     
-    Killaura = vape.Categories.Blatant:CreateModule({
+    Killaura = aether.Categories.Blatant:CreateModule({
     	Name = 'Killaura',
     	Function = function(callback)
     		if callback then
@@ -656,7 +656,7 @@ run(function()
     								arena.SwingFunction()
     								AttackDelay = tick() + 0.11
     
-    								if vape.ThreadFix then
+								if aether.ThreadFix then
     									setthreadidentity(8)
     								end
     							end
@@ -745,7 +745,7 @@ run(function()
     				box.Size = Vector3.new(3, 7, 3)
     				box.CFrame = CFrame.new(0, -0.5, 0)
     				box.ZIndex = 0
-    				box.Parent = vape.gui
+				box.Parent = aether.gui
     				Boxes[i] = box
     			end
     		else
@@ -862,7 +862,7 @@ run(function()
     local Value
     local AutoDisable
     
-    LongJump = vape.Categories.Blatant:CreateModule({
+    LongJump = aether.Categories.Blatant:CreateModule({
     	Name = 'LongJump',
     	Function = function(callback)
     		if callback then
@@ -908,7 +908,7 @@ end)
 run(function()
     local old
     
-    vape.Categories.Blatant:CreateModule({
+    aether.Categories.Blatant:CreateModule({
         Name = 'NoSlow',
         Function = function(callback)
             if callback then
@@ -930,7 +930,7 @@ run(function()
     local Value
     local AutoJump
     
-    Speed = vape.Categories.Blatant:CreateModule({
+    Speed = aether.Categories.Blatant:CreateModule({
     	Name = 'Speed',
     	Function = function(callback)
     		if callback then
@@ -967,7 +967,7 @@ run(function()
     rayCheck.RespectCanCollide = true
     local SpiderShift, Active
     
-    Spider = vape.Categories.Blatant:CreateModule({
+    Spider = aether.Categories.Blatant:CreateModule({
     	Name = 'Spider',
     	Function = function(callback)
     		if callback then
@@ -1025,7 +1025,7 @@ run(function()
     local Value
     local old
     
-    FastBreak = vape.Categories.World:CreateModule({
+    FastBreak = aether.Categories.World:CreateModule({
         Name = 'FastBreak',
         Function = function(callback)
             if callback then
@@ -1057,7 +1057,7 @@ run(function()
     local Value
     local old
     
-    FastPlace = vape.Categories.World:CreateModule({
+    FastPlace = aether.Categories.World:CreateModule({
         Name = 'FastPlace',
         Function = function(callback)
             if callback then

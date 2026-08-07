@@ -4,7 +4,7 @@ end
 local cloneref = cloneref or function(obj)
 	return obj
 end
-local vapeEvents = setmetatable({}, {
+local aetherEvents = setmetatable({}, {
 	__index = function(self, index)
 		self[index] = Instance.new('BindableEvent')
 		return self[index]
@@ -17,16 +17,16 @@ local inputService = cloneref(game:GetService('UserInputService'))
 local replicatedStorage = cloneref(game:GetService('ReplicatedStorage'))
 
 local lplr = playersService.LocalPlayer
-local vape = shared.vape
-local entitylib = vape.Libraries.entity
+local aether = shared.Aether
+local entitylib = aether.Libraries.entity
 local mapobj
 local lstats
 
 local function isFriend(plr, recolor)
-	if vape.Categories.Friends.Options['Use friends'].Enabled then
-		local friend = table.find(vape.Categories.Friends.ListEnabled, plr.Name) and true
+	if aether.Categories.Friends.Options['Use friends'].Enabled then
+		local friend = table.find(aether.Categories.Friends.ListEnabled, plr.Name) and true
 		if recolor then
-			friend = friend and vape.Categories.Friends.Options['Recolor visuals'].Enabled
+			friend = friend and aether.Categories.Friends.Options['Recolor visuals'].Enabled
 		end
 		return friend
 	end
@@ -50,9 +50,9 @@ run(function()
 		repeat
 			lstats = lplr:FindFirstChild('TempPlayerStatsModule')
 			task.wait()
-		until lstats or vape.Loaded == nil
+		until lstats or aether.Loaded == nil
 
-		if vape.Loaded == nil then
+		if aether.Loaded == nil then
 			return
 		end
 	end
@@ -61,14 +61,14 @@ run(function()
 	local function updateMap()
 		if mapval.Value then
 			mapobj = mapval.Value
-			vapeEvents.MapAdded:Fire(mapobj)
+			aetherEvents.MapAdded:Fire(mapobj)
 		elseif mapobj then
-			vapeEvents.MapRemoved:Fire(mapobj)
+			aetherEvents.MapRemoved:Fire(mapobj)
 			mapobj = nil
 		end
 	end
 
-	vape:Clean(mapval:GetPropertyChangedSignal('Value'):Connect(updateMap))
+	aether:Clean(mapval:GetPropertyChangedSignal('Value'):Connect(updateMap))
 	if mapval.Value then
 		updateMap()
 	end
@@ -128,9 +128,9 @@ run(function()
 	end
 
 	entitylib.getEntityColor = function(ent)
-		if not (ent.Player and vape.Categories.Main.Options['Use team color'].Enabled) then return end
+		if not (ent.Player and aether.Categories.Main.Options['Use team color'].Enabled) then return end
 		if isFriend(ent.Player, true) then
-			return Color3.fromHSV(vape.Categories.Friends.Options['Friends color'].Hue, vape.Categories.Friends.Options['Friends color'].Sat, vape.Categories.Friends.Options['Friends color'].Value)
+			return Color3.fromHSV(aether.Categories.Friends.Options['Friends color'].Hue, aether.Categories.Friends.Options['Friends color'].Sat, aether.Categories.Friends.Options['Friends color'].Value)
 		end
 		return ent.IsBeast and Color3.new(1, 0.2, 0.2) or Color3.new(0.3, 1, 0.3)
 	end
@@ -139,7 +139,7 @@ run(function()
 end)
 
 for _, v in {'AimAssist', 'Reach', 'SilentAim', 'TriggerBot', 'AntiVoid', 'Invisible', 'Jesus', 'Killaura', 'Disabler', 'MurderMystery'} do
-	vape:Remove(v)
+	aether:Remove(v)
 end
 
 --[[
@@ -179,7 +179,7 @@ run(function()
     		return entitylib.isAlive and lplr.Character:FindFirstChild('Hammer') or nil
     	end
     
-        Killaura = vape.Categories.Blatant:CreateModule({
+        Killaura = aether.Categories.Blatant:CreateModule({
             Name = 'Killaura',
             Function = function(callback)
                 if callback then
@@ -300,7 +300,7 @@ run(function()
     					box.Size = Vector3.new(3, 5, 3)
     					box.CFrame = CFrame.new(0, -0.5, 0)
     					box.ZIndex = 0
-    					box.Parent = vape.gui
+					box.Parent = aether.gui
     					Boxes[i] = box
     				end
     			else
@@ -434,7 +434,7 @@ run(function()
     local NoSlowdown
     local old
     
-    NoSlowdown = vape.Categories.Blatant:CreateModule({
+    NoSlowdown = aether.Categories.Blatant:CreateModule({
         Name = 'NoSlow',
         Function = function(callback)
             if callback then
@@ -493,7 +493,7 @@ run(function()
         addHammer(ent.Character:FindFirstChild('Hammer'))
     end
     
-    PhaseHammer = vape.Categories.Blatant:CreateModule({
+    PhaseHammer = aether.Categories.Blatant:CreateModule({
         Name = 'PhaseHammer',
         Function = function(callback)
             if callback then
@@ -516,7 +516,7 @@ run(function()
     local RopeDisabler
     local Self
     
-    RopeDisabler = vape.Categories.Utility:CreateModule({
+    RopeDisabler = aether.Categories.Utility:CreateModule({
         Name = 'RestrainBeast',
         Function = function(callback)
             if callback then
@@ -545,7 +545,7 @@ end)
 run(function()
     local SlowBeast
     
-    SlowBeast = vape.Categories.Blatant:CreateModule({
+    SlowBeast = aether.Categories.Blatant:CreateModule({
         Name = 'SlowBeast',
         Function = function(callback)
             if callback then
@@ -568,7 +568,7 @@ end)
 run(function()
     local SpamBeast
     
-    SpamBeast = vape.Categories.Blatant:CreateModule({
+    SpamBeast = aether.Categories.Blatant:CreateModule({
         Name = 'SpamBeast',
         Function = function(callback)
             if callback then
@@ -600,7 +600,7 @@ run(function()
     local OutlineTransparency
     local Reference = {}
     local Folder = Instance.new('Folder')
-    Folder.Parent = vape.gui
+    Folder.Parent = aether.gui
     
     local function Added(computer)
         local screen = computer:FindFirstChild('Screen')
@@ -623,7 +623,7 @@ run(function()
     
     local function Removed(computer)
         if Reference[computer] then
-            if vape.ThreadFix then
+            if aether.ThreadFix then
                 setthreadidentity(8)
             end
     
@@ -651,12 +651,12 @@ run(function()
         end
     end
     
-    ComputerESP = vape.Categories.Render:CreateModule({
+    ComputerESP = aether.Categories.Render:CreateModule({
         Name = 'ComputerESP',
         Function = function(callback)
             if callback then
-                ComputerESP:Clean(vapeEvents.MapAdded.Event:Connect(MapAdded))
-                ComputerESP:Clean(vapeEvents.MapRemoved.Event:Connect(function()
+                ComputerESP:Clean(aetherEvents.MapAdded.Event:Connect(MapAdded))
+                ComputerESP:Clean(aetherEvents.MapRemoved.Event:Connect(function()
                     for _, v in Reference do
                         Removed(v)
                     end
@@ -725,7 +725,7 @@ run(function()
     local AutoComputer
     local Mode
     
-    AutoComputer = vape.Categories.Utility:CreateModule({
+    AutoComputer = aether.Categories.Utility:CreateModule({
         Name = 'AutoComputer',
         Function = function(callback)
             if callback then
@@ -790,7 +790,7 @@ run(function()
     		end))
     	end
     	
-	Viewmodel = vape.Categories.Legit:CreateModule({
+	Viewmodel = aether.Categories.Legit:CreateModule({
     		Name = 'Viewmodel',
     		Function = function(callback)
     			if callback then 

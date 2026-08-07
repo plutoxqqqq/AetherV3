@@ -4,7 +4,7 @@ end
 local cloneref = cloneref or function(obj)
 	return obj
 end
-local vapeEvents = setmetatable({}, {
+local aetherEvents = setmetatable({}, {
 	__index = function(self, index)
 		self[index] = Instance.new('BindableEvent')
 		return self[index]
@@ -20,12 +20,12 @@ local runService = cloneref(game:GetService('RunService'))
 
 local gameCamera = workspace.CurrentCamera
 local lplr = playersService.LocalPlayer
-local vape = shared.vape
-local entitylib = vape.Libraries.entity
-local whitelist = vape.Libraries.whitelist
-local targetinfo = vape.Libraries.targetinfo
-local sessioninfo = vape.Libraries.sessioninfo
-local getfontsize = vape.Libraries.getfontsize
+local aether = shared.Aether
+local entitylib = aether.Libraries.entity
+local whitelist = aether.Libraries.whitelist
+local targetinfo = aether.Libraries.targetinfo
+local sessioninfo = aether.Libraries.sessioninfo
+local getfontsize = aether.Libraries.getfontsize
 
 local store, md = {
     murderer = nil,
@@ -40,7 +40,7 @@ run(function()
             local Index = v:FindFirstChild('KnifeClient') and 'murderer' or v:FindFirstChild('GunClient') and 'sheriff' or nil
             if Index then
                 store[Index] = player
-                vape:Clean(v.Destroying:Once(function()
+                aether:Clean(v.Destroying:Once(function()
                     if store[Index] == player then
                         store[Index] = nil
                     end
@@ -50,13 +50,13 @@ run(function()
     end
     local function Added(plr): ...any
         if plr:IsA('Player') then
-            vape:Clean(plr.CharacterAdded:Connect(Added))
-            vape:Clean(plr:WaitForChild('Backpack', 9e9).ChildAdded:Connect(function(v)
+            aether:Clean(plr.CharacterAdded:Connect(Added))
+            aether:Clean(plr:WaitForChild('Backpack', 9e9).ChildAdded:Connect(function(v)
                 task.delay(0.2, ToolAdded, plr, v)
             end))
-            vape:Clean(plr.ChildAdded:Connect(function(v)
+            aether:Clean(plr.ChildAdded:Connect(function(v)
                 if v:IsA('Backpack') then
-                    vape:Clean(v.ChildAdded:Connect(function(v)
+                    aether:Clean(v.ChildAdded:Connect(function(v)
                         task.delay(0.2, ToolAdded, plr, v)
                     end))
                 end
@@ -69,7 +69,7 @@ run(function()
             end
         else
             local player = playersService:GetPlayerFromCharacter(plr)
-            vape:Clean(plr.ChildAdded:Connect(function(v)
+            aether:Clean(plr.ChildAdded:Connect(function(v)
                 task.delay(0.1, ToolAdded, player, v)
             end))
             for _, v in plr:QueryDescendants('Tool') do
@@ -84,7 +84,7 @@ run(function()
 end)
 
 for _, v in {'Reach', 'TriggerBot', 'AntiVoid', 'AntiRagdoll', 'Disabler'} do
-    vape:Remove(v)
+    aether:Remove(v)
 end
 
 --[[
@@ -117,7 +117,7 @@ run(function()
         return old(origin, direction, params)
     end
     
-    SilentAim = vape.Categories.Combat:CreateModule({
+    SilentAim = aether.Categories.Combat:CreateModule({
         Name = 'SilentAim',
         Function = function(callback)
             if callback then

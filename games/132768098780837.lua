@@ -1,7 +1,7 @@
 -- Never operate this game's remotes in another place, even when this file is force-loaded.
 if game.PlaceId ~= 132768098780837 then return end
 
-local vape = shared.vape
+local aether = shared.Aether
 local players = game:GetService('Players')
 local replicatedStorage = game:GetService('ReplicatedStorage')
 local runService = game:GetService('RunService')
@@ -78,7 +78,7 @@ local function replay(call)
 end
 
 local BreakerRange
-local Breaker = vape.Categories.World:CreateModule({
+local Breaker = aether.Categories.World:CreateModule({
 	Name = 'Breaker',
 	Tooltip = 'Automatically breaks nearby cores, including unparented core blocks',
 	Function = function(enabled)
@@ -98,7 +98,7 @@ local Breaker = vape.Categories.World:CreateModule({
 })
 BreakerRange = Breaker:CreateSlider({Name = 'Range', Min = 1, Max = 30, Default = 18})
 
-local FastBreak = vape.Categories.World:CreateModule({
+local FastBreak = aether.Categories.World:CreateModule({
 	Name = 'FastBreak',
 	Tooltip = 'Removes the hit delay from the block you are currently breaking',
 	Function = function(enabled)
@@ -114,7 +114,7 @@ local FastBreak = vape.Categories.World:CreateModule({
 	end
 })
 
-local AntiDeath = vape.Categories.Blatant:CreateModule({
+local AntiDeath = aether.Categories.Blatant:CreateModule({
 	Name = 'AntiDeath',
 	Tooltip = 'Blocks the dead state and rescues the character from the void',
 	Function = function(enabled)
@@ -143,7 +143,7 @@ local AntiDeath = vape.Categories.Blatant:CreateModule({
 })
 
 local disabledConnections = {}
-local AntiCheatDisabler = vape.Categories.Blatant:CreateModule({
+local AntiCheatDisabler = aether.Categories.Blatant:CreateModule({
 	Name = 'AntiCheatDisabler',
 	Tooltip = 'Disables local detectors and rejects abrupt server position corrections',
 	Function = function(enabled)
@@ -208,7 +208,7 @@ local function abilityActive()
 	return false
 end
 
-local InfiniteAbility = vape.Categories.Blatant:CreateModule({
+local InfiniteAbility = aether.Categories.Blatant:CreateModule({
 	Name = 'InfiniteAbility',
 	Tooltip = 'Extends an ability only while the character reports that it is active',
 	Function = function(enabled)
@@ -254,7 +254,7 @@ local function placeBelow()
 	end
 end
 
-local Scaffold = vape.Categories.Utility:CreateModule({
+local Scaffold = aether.Categories.Utility:CreateModule({
 	Name = 'Scaffold',
 	Tooltip = 'Automatically places blocks beneath the player',
 	Function = function(enabled)
@@ -269,7 +269,7 @@ local Scaffold = vape.Categories.Utility:CreateModule({
 })
 ScaffoldLimit = Scaffold:CreateToggle({Name = 'Limit to items'})
 
-local NoCPSCap = vape.Categories.Combat:CreateModule({
+local NoCPSCap = aether.Categories.Combat:CreateModule({
 	Name = 'NoCPSCap',
 	Tooltip = 'Sends every sword activation instead of waiting for the client swing cap',
 	Function = function(enabled)
