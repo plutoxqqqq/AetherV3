@@ -15,7 +15,7 @@ local delfile = delfile or function(file)
 end
 
 local function isLoadingScreenDisabled()
-	return isfile('aetherv2/profiles/disableloading.txt') and readfile('aetherv2/profiles/disableloading.txt') == 'true'
+	return isfile('aetherv3/profiles/disableloading.txt') and readfile('aetherv3/profiles/disableloading.txt') == 'true'
 end
 
 local function getLoadingScreenParent()
@@ -37,16 +37,12 @@ end
 -- Loading screens are per-GUI: 'new' and 'newer' each get their own design and
 -- 'old' / 'rise' get none.
 local function selectedGui()
-	local ok, res = pcall(readfile, 'aetherv2/profiles/gui.txt')
-	if ok and type(res) == 'string' then
-		return (res:gsub('%s+', ''))
-	end
-	return 'new'
+	return 'aether'
 end
 
 -- Redesigned "Nexus" loading screen - used only when newer.lua is the active
--- GUI. Self-contained: builds its visuals on the shared AetherV2Loading
--- ScreenGui and wires the _G.AetherV2* globals the loader drives during startup.
+-- GUI. Self-contained: builds its visuals on the shared AetherV3Loading
+-- ScreenGui and wires the _G.AetherV3* globals the loader drives during startup.
 local function buildNewerLoadingScreen(screen)
 	local tweenService = game:GetService('TweenService')
 	local primary = Color3.fromRGB(190, 115, 255)
@@ -150,7 +146,7 @@ local function buildNewerLoadingScreen(screen)
 	title.Size = UDim2.fromOffset(420, 40)
 	title.BackgroundTransparency = 1
 	title.Font = Enum.Font.GothamBold
-	title.Text = 'AETHER V2'
+	title.Text = 'AETHER V3'
 	title.TextSize = 34
 	title.TextColor3 = Color3.fromRGB(240, 244, 255)
 	title.Parent = card
@@ -165,8 +161,8 @@ local function buildNewerLoadingScreen(screen)
 	tweenService:Create(titleGrad, TweenInfo.new(2.4, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut, -1, false, 0.6), {Offset = Vector2.new(1, 0)}):Play()
 
 	local versionText = 'Unknown'
-	if isfile('aetherv2/version.txt') then
-		local data = readfile('aetherv2/version.txt')
+	if isfile('aetherv3/version.txt') then
+		local data = readfile('aetherv3/version.txt')
 		versionText = data:match('version%s*=%s*([^\r\n]+)') or versionText
 	end
 	local version = Instance.new('TextLabel')
@@ -230,7 +226,7 @@ local function buildNewerLoadingScreen(screen)
 	status.Size = UDim2.fromOffset(340, 18)
 	status.BackgroundTransparency = 1
 	status.Font = Enum.Font.Gotham
-	status.Text = 'Starting AetherV2...'
+	status.Text = 'Starting AetherV3...'
 	status.TextSize = 13
 	status.TextXAlignment = Enum.TextXAlignment.Left
 	status.TextColor3 = Color3.fromRGB(202, 210, 230)
@@ -252,7 +248,7 @@ local function buildNewerLoadingScreen(screen)
 	footer.Size = UDim2.fromOffset(400, 16)
 	footer.BackgroundTransparency = 1
 	footer.Font = Enum.Font.Gotham
-	footer.Text = 'discord.gg/aetherv2'
+	footer.Text = 'discord.gg/aetherv3'
 	footer.TextSize = 11
 	footer.TextColor3 = Color3.fromRGB(96, 104, 130)
 	footer.Parent = card
@@ -277,9 +273,9 @@ local function buildNewerLoadingScreen(screen)
 		end)
 	end
 
-	_G.AetherV2LoadingScreen = screen
-	_G.AetherV2CloseLoadingScreen = closeScreen
-	_G.AetherV2SetLoadingStatus = function(text, progress)
+	_G.AetherV3LoadingScreen = screen
+	_G.AetherV3CloseLoadingScreen = closeScreen
+	_G.AetherV3SetLoadingStatus = function(text, progress)
 		if not screen.Parent then return end
 		lastProgress = math.clamp(progress or lastProgress, lastProgress, 1)
 		if status.Parent and text then status.Text = text end
@@ -375,7 +371,7 @@ local function buildNewLoadingScreen(screen)
 	logo.Size = UDim2.fromOffset(250, 96)
 	logo.BackgroundTransparency = 1
 	logo.ScaleType = Enum.ScaleType.Fit
-	logo.Image = isfile('aetherv2/assets/new/loading.png') and getcustomasset('aetherv2/assets/new/loading.png') or ''
+	logo.Image = isfile('aetherv3/assets/new/loading.png') and getcustomasset('aetherv3/assets/new/loading.png') or ''
 	logo.ImageTransparency = 1
 	logo.Parent = scrim
 	tweenService:Create(logo, TweenInfo.new(0.5), {ImageTransparency = 0}):Play()
@@ -430,8 +426,8 @@ local function buildNewLoadingScreen(screen)
 	caption.Parent = scrim
 
 	local function readVersion()
-		if not isfile('aetherv2/version.txt') then return nil end
-		return (readfile('aetherv2/version.txt'):match('version%s*=%s*([^\r\n]+)'))
+		if not isfile('aetherv3/version.txt') then return nil end
+		return (readfile('aetherv3/version.txt'):match('version%s*=%s*([^\r\n]+)'))
 	end
 
 	local version = Instance.new('TextLabel')
@@ -444,7 +440,7 @@ local function buildNewLoadingScreen(screen)
 	version.TextSize = 11
 	version.TextColor3 = faint
 	version.TextTransparency = 0.62
-	version.Text = 'AETHERV2  ' .. (readVersion() or '')
+	version.Text = 'AETHERV3  ' .. (readVersion() or '')
 	version.Parent = scrim
 
 	local lastProgress = 0.04
@@ -471,9 +467,9 @@ local function buildNewLoadingScreen(screen)
 		end)
 	end
 
-	_G.AetherV2LoadingScreen = screen
-	_G.AetherV2CloseLoadingScreen = closeScreen
-	_G.AetherV2SetLoadingStatus = function(text, progress)
+	_G.AetherV3LoadingScreen = screen
+	_G.AetherV3CloseLoadingScreen = closeScreen
+	_G.AetherV3SetLoadingStatus = function(text, progress)
 		if not screen.Parent then return end
 		-- Only ever forward, so a step that reports a smaller number cannot make the bar jump back.
 		lastProgress = math.clamp(progress or lastProgress, lastProgress, 1)
@@ -489,15 +485,15 @@ local function buildNewLoadingScreen(screen)
 			})
 			fillTween:Play()
 		end
-		if version.Parent and version.Text == 'AETHERV2  ' then
+		if version.Parent and version.Text == 'AETHERV3  ' then
 			local found = readVersion()
 			if found then
-				version.Text = 'AETHERV2  ' .. found
+				version.Text = 'AETHERV3  ' .. found
 			end
 		end
 		-- The logo is downloaded during the load, so pick it up as soon as it lands.
-		if logo.Parent and logo.Image == '' and isfile('aetherv2/assets/new/loading.png') then
-			logo.Image = getcustomasset('aetherv2/assets/new/loading.png')
+		if logo.Parent and logo.Image == '' and isfile('aetherv3/assets/new/loading.png') then
+			logo.Image = getcustomasset('aetherv3/assets/new/loading.png')
 		end
 	end
 	return screen
@@ -510,11 +506,11 @@ local function createLoadingScreen()
 	if gui ~= 'new' and gui ~= 'newer' then return nil end
 	local parent = getLoadingScreenParent()
 	if not parent then return nil end
-	local existing = parent:FindFirstChild('AetherV2Loading')
-	if existing and _G.AetherV2SetLoadingStatus then return existing end
+	local existing = parent:FindFirstChild('AetherV3Loading')
+	if existing and _G.AetherV3SetLoadingStatus then return existing end
 
 	local screen = existing or Instance.new('ScreenGui')
-	screen.Name = 'AetherV2Loading'
+	screen.Name = 'AetherV3Loading'
 	screen.IgnoreGuiInset = true
 	screen.ResetOnSpawn = false
 	screen.DisplayOrder = 2147483647
@@ -534,25 +530,25 @@ local loadingScreen = createLoadingScreen()
 -- Yield once so Roblox can render the screen before downloads/requires occupy
 -- the loader thread.  Without this, the first visible frame could be the fade-out.
 if loadingScreen then task.wait() end
-if not _G.AetherV2SetLoadingStatus then
-	_G.AetherV2SetLoadingStatus = function() end
+if not _G.AetherV3SetLoadingStatus then
+	_G.AetherV3SetLoadingStatus = function() end
 end
 
 -- A load that dies here used to leave the loading screen sitting on the user's face forever, with
 -- the reason only in the console. Take the screen down and say what happened.
 local function failLoad(message)
-	if _G.AetherV2CloseLoadingScreen then
-		pcall(_G.AetherV2CloseLoadingScreen)
-	elseif _G.AetherV2LoadingScreen then
-		pcall(function() _G.AetherV2LoadingScreen:Destroy() end)
+	if _G.AetherV3CloseLoadingScreen then
+		pcall(_G.AetherV3CloseLoadingScreen)
+	elseif _G.AetherV3LoadingScreen then
+		pcall(function() _G.AetherV3LoadingScreen:Destroy() end)
 	end
-	_G.AetherV2LoadingScreen = nil
-	_G.AetherV2SetLoadingStatus = nil
-	_G.AetherV2CloseLoadingScreen = nil
-	warn('[AetherV2] Load failed: '..tostring(message))
+	_G.AetherV3LoadingScreen = nil
+	_G.AetherV3SetLoadingStatus = nil
+	_G.AetherV3CloseLoadingScreen = nil
+	warn('[AetherV3] Load failed: '..tostring(message))
 	pcall(function()
 		game:GetService('StarterGui'):SetCore('SendNotification', {
-			Title = 'AetherV2 failed to load',
+			Title = 'AetherV3 failed to load',
 			Text = tostring(message):sub(1, 180),
 			Duration = 12
 		})
@@ -580,7 +576,7 @@ local function payloadProblem(path, body)
 end
 
 local function repoUrl(path, ref)
-	return 'https://raw.githubusercontent.com/plutoxqqqq/AetherV2/'..(ref or readfile('aetherv2/profiles/commit.txt'))..'/'..select(1, path:gsub('aetherv2/', ''))
+	return 'https://raw.githubusercontent.com/plutoxqqqq/AetherV3/'..(ref or readfile('aetherv3/profiles/commit.txt'))..'/'..select(1, path:gsub('aetherv3/', ''))
 end
 
 -- Fetch with retries, returning the body or nil plus a reason. Most failures here are transient - a
@@ -616,12 +612,12 @@ end
 local function downloadFile(path, func)
 	-- Heal a broken cache instead of trusting it forever.
 	if isfile(path) and path:sub(-4) == '.lua' and not loadstring(readfile(path), path) then
-		warn('[AetherV2] Cached '..path..' is unusable, downloading it again')
+		warn('[AetherV3] Cached '..path..' is unusable, downloading it again')
 		delfile(path)
 	end
 	if not isfile(path) then
 		if not license.Closet then
-			_G.AetherV2SetLoadingStatus('Downloading '..path, 0.35)
+			_G.AetherV3SetLoadingStatus('Downloading '..path, 0.35)
 		end
 		local body, problem = fetchFile(path)
 		if not body then
@@ -638,8 +634,8 @@ end
 -- choice and colours, so a wipe skips the entire folder to protect them - and took these two along
 -- for the ride. Downloaded once on a fresh install, never updated again, for everyone.
 local repoProfileFiles = {
-	['aetherv2/profiles/features.json'] = true,
-	['aetherv2/profiles/packages.json'] = true
+	['aetherv3/profiles/features.json'] = true,
+	['aetherv3/profiles/packages.json'] = true
 }
 
 local function isUserFile(normalized)
@@ -669,23 +665,23 @@ local function wipeFolder(path)
 end
 
 
-for _, folder in {'aetherv2', 'aetherv2/games', 'aetherv2/profiles', 'aetherv2/assets', 'aetherv2/assets/new', 'aetherv2/libraries', 'aetherv2/guis', 'aetherv2/configs', 'aetherv2/songs', 'aetherv2/songs/spotify'} do
+for _, folder in {'aetherv3', 'aetherv3/games', 'aetherv3/profiles', 'aetherv3/assets', 'aetherv3/assets/new', 'aetherv3/libraries', 'aetherv3/guis', 'aetherv3/configs', 'aetherv3/songs', 'aetherv3/songs/spotify'} do
 	if not isfolder(folder) then
-		_G.AetherV2SetLoadingStatus('Creating '..folder, 0.08)
+		_G.AetherV3SetLoadingStatus('Creating '..folder, 0.08)
 		makefolder(folder)
 	end
 end
 
--- Drop-a-song note, written once. MP3Player reads whatever is in aetherv2/songs, so the folder is
+-- Drop-a-song note, written once. MP3Player reads whatever is in aetherv3/songs, so the folder is
 -- no use to anyone who does not know it is there.
-if not isfile('aetherv2/songs/read me.txt') then
-	pcall(writefile, 'aetherv2/songs/read me.txt', table.concat({
-		'AetherV2 - MP3Player',
+if not isfile('aetherv3/songs/read me.txt') then
+	pcall(writefile, 'aetherv3/songs/read me.txt', table.concat({
+		'AetherV3 - MP3Player',
 		'',
 		'Put .mp3 (or .wav / .ogg) files in this folder and they show up in the MP3Player module',
 		'under Utility. Songs are picked up while you play - no reinject needed.',
 		'',
-		'aetherv2/songs/spotify holds clips fetched by Spotify mode.',
+		'aetherv3/songs/spotify holds clips fetched by Spotify mode.',
 		'This folder is never wiped by a script update.'
 	}, '\n'))
 end
@@ -704,9 +700,9 @@ end
 -- connection that happened on every injection. A lookup that fails now changes nothing at all.
 local function resolveCommit()
 	local sources = {
-		{Url = 'https://api.github.com/repos/plutoxqqqq/AetherV2/commits/main', Pattern = '"sha"%s*:%s*"(%x+)"'},
-		{Url = 'https://github.com/plutoxqqqq/AetherV2/commits/main.atom', Pattern = 'Commit/(%x+)'},
-		{Url = 'https://github.com/plutoxqqqq/AetherV2', Pattern = 'currentOid[^%x]*(%x+)'}
+		{Url = 'https://api.github.com/repos/plutoxqqqq/AetherV3/commits/main', Pattern = '"sha"%s*:%s*"(%x+)"'},
+		{Url = 'https://github.com/plutoxqqqq/AetherV3/commits/main.atom', Pattern = 'Commit/(%x+)'},
+		{Url = 'https://github.com/plutoxqqqq/AetherV3', Pattern = 'currentOid[^%x]*(%x+)'}
 	}
 	for _, source in sources do
 		local suc, body = pcall(function()
@@ -738,7 +734,7 @@ end
 -- everything, which is exactly what used to happen anyway.
 local function fetchFileList(ref)
 	local suc, body = pcall(function()
-		return game:HttpGet('https://api.github.com/repos/plutoxqqqq/AetherV2/git/trees/'..ref..'?recursive=1', true)
+		return game:HttpGet('https://api.github.com/repos/plutoxqqqq/AetherV3/git/trees/'..ref..'?recursive=1', true)
 	end)
 	if not suc or type(body) ~= 'string' then return nil end
 	-- Only ever set on a repository far larger than this one, but a partial list would silently
@@ -766,7 +762,7 @@ end
 
 -- What the last update left on disk, one 'id path' line per file. It lives beside commit.txt
 -- because it describes this install rather than the repository.
-local fileListPath = 'aetherv2/profiles/files.txt'
+local fileListPath = 'aetherv3/profiles/files.txt'
 
 local function readFileList()
 	if not isfile(fileListPath) then return nil end
@@ -792,8 +788,8 @@ local function writeFileList(files)
 end
 
 -- Left behind on installs that predate the list above.
-if isfile('aetherv2/profiles/manifest.json') then
-	delfile('aetherv2/profiles/manifest.json')
+if isfile('aetherv3/profiles/manifest.json') then
+	delfile('aetherv3/profiles/manifest.json')
 end
 
 local prefetchPaths = nil
@@ -802,16 +798,16 @@ local prefetchPaths = nil
 -- calling it before the update reports the version being replaced and calling it
 -- after reports the one that landed.
 local function installedVersion()
-	if not isfile('aetherv2/version.txt') then return nil end
-	local body = readfile('aetherv2/version.txt')
+	if not isfile('aetherv3/version.txt') then return nil end
+	local body = readfile('aetherv3/version.txt')
 	if type(body) ~= 'string' then return nil end
 	local found = body:match('version%s*=%s*([^\r\n]+)')
 	return found and (found:gsub('%s+$', '')) or nil
 end
 
 if not shared.VapeDeveloper then
-	local oldCommit = isfile('aetherv2/profiles/commit.txt') and readfile('aetherv2/profiles/commit.txt') or ''
-	_G.AetherV2SetLoadingStatus('Checking for updates', 0.12)
+	local oldCommit = isfile('aetherv3/profiles/commit.txt') and readfile('aetherv3/profiles/commit.txt') or ''
+	_G.AetherV3SetLoadingStatus('Checking for updates', 0.12)
 	local commit = license.Commit or resolveCommit()
 
 	if commit and commit ~= oldCommit then
@@ -836,7 +832,7 @@ if not shared.VapeDeveloper then
 		if newFiles and oldFiles then
 			local changed = 0
 			for path, blob in newFiles do
-				local target = 'aetherv2/'..path
+				local target = 'aetherv3/'..path
 				if oldFiles[path] ~= blob and isfile(target) then
 					delfile(target)
 					changed += 1
@@ -845,7 +841,7 @@ if not shared.VapeDeveloper then
 			-- Files that no longer exist upstream.
 			for path in oldFiles do
 				if not newFiles[path] then
-					local target = 'aetherv2/'..path
+					local target = 'aetherv3/'..path
 					if isfile(target) and not isUserFile('/'..target) then
 						delfile(target)
 						changed += 1
@@ -853,12 +849,12 @@ if not shared.VapeDeveloper then
 				end
 			end
 			changedFiles = changed
-			_G.AetherV2SetLoadingStatus('Updating '..changed..' file'..(changed == 1 and '' or 's'), 0.16)
+			_G.AetherV3SetLoadingStatus('Updating '..changed..' file'..(changed == 1 and '' or 's'), 0.16)
 		else
-			wipeFolder('aetherv2')
-			wipeFolder('aetherv2/games')
-			wipeFolder('aetherv2/guis')
-			wipeFolder('aetherv2/libraries')
+			wipeFolder('aetherv3')
+			wipeFolder('aetherv3/games')
+			wipeFolder('aetherv3/guis')
+			wipeFolder('aetherv3/libraries')
 		end
 
 		-- Only an update the user would actually notice is worth announcing. A first
@@ -869,7 +865,7 @@ if not shared.VapeDeveloper then
 			shared.updated = {From = previousVersion, Files = changedFiles}
 		end
 
-		writefile('aetherv2/profiles/commit.txt', commit)
+		writefile('aetherv3/profiles/commit.txt', commit)
 		if newFiles then
 			writeFileList(newFiles)
 		elseif isfile(fileListPath) then
@@ -881,7 +877,7 @@ if not shared.VapeDeveloper then
 		prefetchPaths = newFiles
 	elseif oldCommit == '' then
 		-- First run with no answer from GitHub: fall back to main rather than having no ref at all.
-		writefile('aetherv2/profiles/commit.txt', commit or 'main')
+		writefile('aetherv3/profiles/commit.txt', commit or 'main')
 	else
 		-- Up to date. The stored list is this commit's file list, so it can drive the prefetch below
 		-- without another request.
@@ -898,8 +894,8 @@ if not shared.VapeDeveloper then
 	end
 end
 
-if not isfile('aetherv2/profiles/disableloading.txt') then
-	writefile('aetherv2/profiles/disableloading.txt', 'false')
+if not isfile('aetherv3/profiles/disableloading.txt') then
+	writefile('aetherv3/profiles/disableloading.txt', 'false')
 end
 
 -- Pull every file this session will need, at the same time.
@@ -924,10 +920,10 @@ local function neededFiles(files)
 	if not files then return {} end
 	local gui = selectedGui()
 	local place = tostring(game.PlaceId)
-	if isfile('aetherv2/profiles/forcegame.txt')
-		and readfile('aetherv2/profiles/forcegame.txt') == 'true'
-		and isfile('aetherv2/profiles/forcegameid.txt') then
-		local forced = readfile('aetherv2/profiles/forcegameid.txt'):match('^%s*(%d+)%s*$')
+	if isfile('aetherv3/profiles/forcegame.txt')
+		and readfile('aetherv3/profiles/forcegame.txt') == 'true'
+		and isfile('aetherv3/profiles/forcegameid.txt') then
+		local forced = readfile('aetherv3/profiles/forcegameid.txt'):match('^%s*(%d+)%s*$')
 		place = forced or place
 	end
 	local wanted = {}
@@ -955,7 +951,7 @@ local function neededFiles(files)
 			end
 		end
 		if include and not deferredFiles[path] then
-			local target = 'aetherv2/'..path
+			local target = 'aetherv3/'..path
 			if not isfile(target) then
 				table.insert(wanted, target)
 			end
@@ -983,7 +979,7 @@ local function prefetch(files)
 					pcall(storeFile, path, body)
 				end
 				done += 1
-				_G.AetherV2SetLoadingStatus('Downloading files ('..done..'/'..total..')', 0.22 + (0.4 * (done / total)))
+				_G.AetherV3SetLoadingStatus('Downloading files ('..done..'/'..total..')', 0.22 + (0.4 * (done / total)))
 			end
 			active -= 1
 		end)
@@ -994,8 +990,8 @@ local function prefetch(files)
 	repeat task.wait(0.05) until active <= 0 or os.clock() > deadline
 end
 
-_G.AetherV2SetLoadingStatus('Checking version', 0.18)
-downloadFile('aetherv2/version.txt')
+_G.AetherV3SetLoadingStatus('Checking version', 0.18)
+downloadFile('aetherv3/version.txt')
 
 -- version.txt is only back on disk now, so this is the first point the version that
 -- arrived can be read. main.lua turns the pair into the update notification.
@@ -1003,7 +999,7 @@ if type(shared.updated) == 'table' then
 	shared.updated.To = installedVersion()
 end
 
-local versionData = readfile("aetherv2/version.txt")
+local versionData = readfile("aetherv3/version.txt")
 local maintenance = versionData:match("maintenance%s*=%s*([^\r\n]+)")
 
 if maintenance and maintenance:match("^%s*true%s*$") then
@@ -1011,8 +1007,8 @@ if maintenance and maintenance:match("^%s*true%s*$") then
 
 	pcall(function()
 		StarterGui:SetCore("SendNotification", {
-			Title = "AetherV2 Unavaliable",
-			Text = "AetherV2 is currently under maintenance\nDiscord link copied to clipboard",
+			Title = "AetherV3 Unavaliable",
+			Text = "AetherV3 is currently under maintenance\nDiscord link copied to clipboard",
 			Duration = 8
 		})
 	end)
@@ -1027,11 +1023,11 @@ end
 -- Only worth doing once we know the script is actually going to run.
 prefetch(prefetchPaths)
 
-_G.AetherV2SetLoadingStatus('Preparing loading artwork...', 0.70)
-pcall(downloadFile, 'aetherv2/assets/new/loading.png')
+_G.AetherV3SetLoadingStatus('Preparing loading artwork...', 0.70)
+pcall(downloadFile, 'aetherv3/assets/new/loading.png')
 
-_G.AetherV2SetLoadingStatus('Loading main script', 0.82)
-local mainChunk = loadstring(downloadFile('aetherv2/main.lua'), 'main')
+_G.AetherV3SetLoadingStatus('Loading main script', 0.82)
+local mainChunk = loadstring(downloadFile('aetherv3/main.lua'), 'main')
 if not mainChunk then
 	-- The cache heal above should have caught this, so if it still will not compile the copy on
 	-- GitHub is genuinely broken - say so instead of erroring on a nil call with the screen up.

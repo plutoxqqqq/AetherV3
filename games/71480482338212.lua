@@ -1,5 +1,5 @@
 -- BedFight support module (PlaceId: 71480482338212).
--- Adapted from the BedWars module surface so BedFight exposes the same AetherV2 modules.
+-- Adapted from the BedWars module surface so BedFight exposes the same AetherV3 modules.
 local canDebug = true
 -- Each module registers through run(). A bare func() meant one bad module aborted the whole chunk
 -- part-way through, so a single error (a missing remote, a renamed controller) silently cost every
@@ -7,7 +7,7 @@ local canDebug = true
 local run = function(func)
 	local success, result = xpcall(func, debug and debug.traceback or tostring)
 	if not success then
-		warn('[AetherV2] Skipped a BedFight module during startup: '..tostring(result))
+		warn('[AetherV3] Skipped a BedFight module during startup: '..tostring(result))
 	end
 	return success
 end
@@ -63,7 +63,7 @@ local getcustomasset = vape.Libraries.getcustomasset
 local function downloadFile(path, func)
 	if not isfile(path) then
 		local suc, res = pcall(function()
-			return game:HttpGet('https://raw.githubusercontent.com/plutoxqqqq/AetherV2/'..readfile('aetherv2/profiles/commit.txt')..'/'..select(1, path:gsub('aetherv2/', '')), true)
+			return game:HttpGet('https://raw.githubusercontent.com/plutoxqqqq/AetherV3/'..readfile('aetherv3/profiles/commit.txt')..'/'..select(1, path:gsub('aetherv3/', '')), true)
 		end)
 		if not suc or res == '404: Not Found' then
 			error(res)
@@ -132,7 +132,7 @@ local function addBlur(parent)
 	blur.Size = UDim2.new(1, 89, 1, 52)
 	blur.Position = UDim2.fromOffset(-48, -31)
 	blur.BackgroundTransparency = 1
-	blur.Image = getcustomasset('aetherv2/assets/new/blur.png')
+	blur.Image = getcustomasset('aetherv3/assets/new/blur.png')
 	blur.ScaleType = Enum.ScaleType.Slice
 	blur.SliceCenter = Rect.new(52, 31, 261, 502)
 	blur.Parent = parent
@@ -834,7 +834,7 @@ shared.gg = {}
 run(function()
 	canDebug = not table.find({'Solara', 'Xeno'}, ({identifyexecutor()})[1]) and true or false
 	if not canDebug then
-		local cheatenginelib = loadstring(downloadFile('aetherv2/libraries/cheatenginelib.lua'), 'cheatenginelib')(vape, vapeEvents, entitylib)
+		local cheatenginelib = loadstring(downloadFile('aetherv3/libraries/cheatenginelib.lua'), 'cheatenginelib')(vape, vapeEvents, entitylib)
 		require = function(v) 
 			return cheatenginelib[({v:GetFullName():gsub(lplr.Name, 'PlayerTemplate')})[1]]:await()
 		end
@@ -868,7 +868,7 @@ run(function()
 		local upvalueDeadline = tick() + 15
 		repeat task.wait() until debug.getupvalue(Knit.Start, 1) or tick() > upvalueDeadline
 		if not debug.getupvalue(Knit.Start, 1) then
-			warn('[AetherV2] debug.getupvalue is unavailable here - modules that need it are disabled')
+			warn('[AetherV3] debug.getupvalue is unavailable here - modules that need it are disabled')
 			canDebug = false
 		end
 	end
@@ -1088,7 +1088,7 @@ run(function()
 		WarlockTarget = canDebug and getproto(Knit.Controllers.WarlockStaffController.KnitStart, 2) or function() end
 	}
 
-	local packages = httpService:JSONDecode(downloadFile('aetherv2/profiles/packages.json'))
+	local packages = httpService:JSONDecode(downloadFile('aetherv3/profiles/packages.json'))
 	local function dumpRemote(tab)
 		if not tab then return '' end
 		local ind
@@ -1107,7 +1107,7 @@ run(function()
 			remote = packages.remotes[i]
 		end
 		if remote == '' then
-			notif('AetherV2', 'Failed to grab remote ('..i..')', 10, 'alert')
+			notif('AetherV3', 'Failed to grab remote ('..i..')', 10, 'alert')
 		end
 		remotes[i] = remote
 	end
@@ -14032,7 +14032,7 @@ run(function()
         close.Position = UDim2.new(1, -35, 0, 9)
         close.BackgroundColor3 = Color3.new(1, 1, 1)
         close.BackgroundTransparency = 1
-        close.Image = getcustomasset('aetherv2/assets/new/close.png')
+        close.Image = getcustomasset('aetherv3/assets/new/close.png')
         close.ImageColor3 = color.Light(uipallet.Text, 0.2)
         close.ImageTransparency = 0.5
         close.AutoButtonColor = false
@@ -14146,7 +14146,7 @@ run(function()
         searchicon.Size = UDim2.fromOffset(14, 14)
         searchicon.Position = UDim2.new(1, -26, 0, 8)
         searchicon.BackgroundTransparency = 1
-        searchicon.Image = getcustomasset('aetherv2/assets/new/search.png')
+        searchicon.Image = getcustomasset('aetherv3/assets/new/search.png')
         searchicon.ImageColor3 = color.Light(uipallet.Main, 0.37)
         searchicon.Parent = searchbkg
         local children = Instance.new('ScrollingFrame')
@@ -14287,7 +14287,7 @@ run(function()
         textbuttonicon.Position = UDim2.fromScale(0.5, 0.5)
         textbuttonicon.AnchorPoint = Vector2.new(0.5, 0.5)
         textbuttonicon.BackgroundTransparency = 1
-        textbuttonicon.Image = getcustomasset('aetherv2/assets/new/add.png')
+        textbuttonicon.Image = getcustomasset('aetherv3/assets/new/add.png')
         textbuttonicon.ImageColor3 = Color3.fromHSV(0.46, 0.96, 0.52)
         textbuttonicon.Parent = textbutton
         local childrenlist = Instance.new('Frame')
@@ -14380,7 +14380,7 @@ run(function()
             close.Position = UDim2.new(1, -23, 0, 6)
             close.BackgroundColor3 = Color3.new(1, 1, 1)
             close.BackgroundTransparency = 1
-            close.Image = getcustomasset('aetherv2/assets/new/closemini.png')
+            close.Image = getcustomasset('aetherv3/assets/new/closemini.png')
             close.ImageColor3 = color.Light(uipallet.Text, 0.2)
             close.ImageTransparency = 0.5
             close.AutoButtonColor = false
@@ -15073,7 +15073,7 @@ run(function()
                         Size = UDim2.new(1, 89, 1, 52),
                         Position = UDim2.fromOffset(-48, -31),
                         BackgroundTransparency = 1,
-                        Image = getcustomasset('aetherv2/assets/new/blur.png'),
+                        Image = getcustomasset('aetherv3/assets/new/blur.png'),
                         ScaleType = Enum.ScaleType.Slice,
                         SliceCenter = Rect.new(52, 31, 261, 502)
                     }),

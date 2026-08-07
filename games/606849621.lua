@@ -1,7 +1,7 @@
 local compile = loadstring
 local loadstring = function(...)
 	local res, err = compile(...)
-	if err and vape then vape:CreateNotification('AetherV2', 'Failed to load : '..err, 30, 'alert') end
+	if err and vape then vape:CreateNotification('AetherV3', 'Failed to load : '..err, 30, 'alert') end
 	return res
 end
 local isfile = isfile or function(file)
@@ -10,7 +10,7 @@ local isfile = isfile or function(file)
 end
 local function downloadFile(path, func)
 	if not isfile(path) then
-		local suc, res = pcall(function() return game:HttpGet('https://raw.githubusercontent.com/plutoxqqqq/AetherV2/'..readfile('aetherv2/profiles/commit.txt')..'/'..select(1, path:gsub('aetherv2/', '')), true) end)
+		local suc, res = pcall(function() return game:HttpGet('https://raw.githubusercontent.com/plutoxqqqq/AetherV3/'..readfile('aetherv3/profiles/commit.txt')..'/'..select(1, path:gsub('aetherv3/', '')), true) end)
 		if not suc or res == '404: Not Found' then error(res) end
 		if path:find('.lua') then res = '--This watermark is used to delete the file if its cached, remove it to make the file persist after vape updates.\n'..res end
 		writefile(path, res)
@@ -39,7 +39,7 @@ local whitelist = vape.Libraries.whitelist
 local prediction = vape.Libraries.prediction
 local targetinfo = vape.Libraries.targetinfo
 local sessioninfo = vape.Libraries.sessioninfo
-local vm = loadstring(downloadFile('aetherv2/libraries/vm.lua'), 'vm')()
+local vm = loadstring(downloadFile('aetherv3/libraries/vm.lua'), 'vm')()
 
 local jb = {}
 local InfNitro = {Enabled = false}
@@ -319,7 +319,7 @@ run(function()
 
 	function jb:FireServer(id, ...)
 		if not remotes[id] then
-			notif('AetherV2', 'Failed to find remote ('..id..')', 10, 'alert')
+			notif('AetherV3', 'Failed to find remote ('..id..')', 10, 'alert')
 			return
 		end
 		return hook(remotetable, remotes[id], ...)
