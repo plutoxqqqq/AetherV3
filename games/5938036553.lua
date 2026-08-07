@@ -2,7 +2,7 @@ local compile = loadstring
 local loadstring = function(...)
 	local res, err = compile(...)
 	if err and vape then
-		vape:CreateNotification('AetherV2', 'Failed to load : ' .. err, 30, 'alert')
+		vape:CreateNotification('AetherV3', 'Failed to load : ' .. err, 30, 'alert')
 	end
 	return res
 end
@@ -17,10 +17,10 @@ local function downloadFile(path, func)
 	if not isfile(path) then
 		local suc, res = pcall(function()
 			return game:HttpGet(
-				'https://raw.githubusercontent.com/plutoxqqqq/AetherV2/'
-					.. readfile('aetherv2/profiles/commit.txt')
+				'https://raw.githubusercontent.com/plutoxqqqq/AetherV3/'
+					.. readfile('aetherv3/profiles/commit.txt')
 					.. '/'
-					.. select(1, path:gsub('aetherv2/', '')),
+					.. select(1, path:gsub('aetherv3/', '')),
 				true
 			)
 		end)
@@ -58,7 +58,7 @@ local prediction = vape.Libraries.prediction
 local targetinfo = vape.Libraries.targetinfo
 local sessioninfo = vape.Libraries.sessioninfo
 local getcustomasset = vape.Libraries.getcustomasset
-local drawingactor = loadstring(downloadFile('aetherv2/libraries/drawing.lua'), 'drawing')(...)
+local drawingactor = loadstring(downloadFile('aetherv3/libraries/drawing.lua'), 'drawing')(...)
 local function notif(...)
 	return vape:CreateNotification(...)
 end
@@ -76,7 +76,7 @@ if not select(1, ...) and game.PlaceId == 5938036553 then
 			repeat
 				task.wait()
 			until not shared.vape
-			local executionString = "loadfile('aetherv2/main.lua')(" .. drawingactor .. ')'
+			local executionString = "loadfile('aetherv3/main.lua')(" .. drawingactor .. ')'
 			for i, v in shared do
 				if type(v) == 'string' then
 					executionString = string.format("shared.%s = '%s'", i, v) .. '\n' .. executionString
@@ -94,11 +94,11 @@ if not select(1, ...) and game.PlaceId == 5938036553 then
 					return
 				end
 			end
-			notif('AetherV2', 'Failed to find actor', 10, 'alert')
+			notif('AetherV3', 'Failed to find actor', 10, 'alert')
 		end)
 	else
 		vape.Load = function()
-			notif('AetherV2', 'Missing actor functions.', 10, 'alert')
+			notif('AetherV3', 'Missing actor functions.', 10, 'alert')
 		end
 	end
 
@@ -113,7 +113,7 @@ local function addBlur(parent)
 	blur.Size = UDim2.new(1, 89, 1, 52)
 	blur.Position = UDim2.fromOffset(-48, -31)
 	blur.BackgroundTransparency = 1
-	blur.Image = getcustomasset('aetherv2/assets/new/blur.png')
+	blur.Image = getcustomasset('aetherv3/assets/new/blur.png')
 	blur.ScaleType = Enum.ScaleType.Slice
 	blur.SliceCenter = Rect.new(52, 31, 261, 502)
 	blur.Parent = parent
@@ -159,7 +159,7 @@ local function hookEvent(id, rfunc)
 	end)
 
 	if not suc then
-		notif('AetherV2', 'Failed to hook (' .. id .. ')', 10, 'alert')
+		notif('AetherV3', 'Failed to hook (' .. id .. ')', 10, 'alert')
 	end
 
 	return type(res) == 'function' and res or function() end

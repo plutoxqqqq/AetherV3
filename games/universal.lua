@@ -2,7 +2,7 @@ local vape = shared.vape
 local loadstring = function(...)
 	local res, err = loadstring(...)
 	if err and vape then
-		vape:CreateNotification('AetherV2', 'Failed to load : ' .. err, 30, 'alert')
+		vape:CreateNotification('AetherV3', 'Failed to load : ' .. err, 30, 'alert')
 	end
 	return res
 end
@@ -16,7 +16,7 @@ local isfile = isfile
 local function downloadFile(path, func)
 	if not isfile(path) then
 		local suc, res = pcall(function()
-			return game:HttpGet('https://raw.githubusercontent.com/plutoxqqqq/AetherV2/' .. readfile('aetherv2/profiles/commit.txt') .. '/' .. select(1, path:gsub('aetherv2/', '')), true)
+			return game:HttpGet('https://raw.githubusercontent.com/plutoxqqqq/AetherV3/' .. readfile('aetherv3/profiles/commit.txt') .. '/' .. select(1, path:gsub('aetherv3/', '')), true)
 		end)
 		if not suc or res == '404: Not Found' then
 			error(res)
@@ -34,7 +34,7 @@ end
 local run = function(func)
 	local success, result = xpcall(func, debug and debug.traceback or tostring)
 	if not success then
-		warn('[AetherV2] Skipped a universal module during startup: '..tostring(result))
+		warn('[AetherV3] Skipped a universal module during startup: '..tostring(result))
 	end
 	return success
 end
@@ -80,7 +80,7 @@ local function addBlur(parent)
 	blur.Size = UDim2.new(1, 89, 1, 52)
 	blur.Position = UDim2.fromOffset(-48, -31)
 	blur.BackgroundTransparency = 1
-	blur.Image = getcustomasset('aetherv2/assets/new/blur.png')
+	blur.Image = getcustomasset('aetherv3/assets/new/blur.png')
 	blur.ScaleType = Enum.ScaleType.Slice
 	blur.SliceCenter = Rect.new(52, 31, 261, 502)
 	blur.Parent = parent
@@ -171,7 +171,7 @@ local function serverHop(pointer, filter)
 		table.insert(visited, game.JobId)
 	end
 	if not pointer then
-		notif('AetherV2', 'Searching for an available server.', 2)
+		notif('AetherV3', 'Searching for an available server.', 2)
 	end
 
 	local suc, httpdata = pcall(function()
@@ -197,7 +197,7 @@ local function serverHop(pointer, filter)
 				cacheExpire, cache = tick() + 60, httpdata
 				table.insert(attempted, v.id)
 
-				notif('AetherV2', 'Found! Teleporting.', 5)
+				notif('AetherV3', 'Found! Teleporting.', 5)
 				teleportService:TeleportToPlaceInstance(game.PlaceId, v.id)
 				return
 			end
@@ -206,11 +206,11 @@ local function serverHop(pointer, filter)
 		if data.nextPageCursor then
 			serverHop(data.nextPageCursor, filter)
 		else
-			notif('AetherV2', 'Failed to find an available server.', 5, 'warning')
+			notif('AetherV3', 'Failed to find an available server.', 5, 'warning')
 		end
 	else
 		notif(
-			'AetherV2',
+			'AetherV3',
 			'Failed to grab servers. (' .. (data and data.errors[1].message or 'no data') .. ')',
 			5,
 			'warning'
@@ -231,7 +231,7 @@ vape:Clean(lplr.OnTeleport:Connect(function()
 	end
 end))
 
-vape.Libraries.string = loadstring(downloadFile('aetherv2/libraries/string.lua'), 'string')()
+vape.Libraries.string = loadstring(downloadFile('aetherv3/libraries/string.lua'), 'string')()
 local frictionTable, oldfrict, entitylib = {}, {}
 local function updateVelocity()
 	if getTableSize(frictionTable) > 0 then
@@ -263,9 +263,9 @@ local function motorMove(target, cf)
 	task.delay(0, part.Destroy, part)
 end
 
-local hash = loadstring(downloadFile('aetherv2/libraries/hash.lua'), 'hash')()
-local prediction = loadstring(downloadFile('aetherv2/libraries/prediction.lua'), 'prediction')()
-entitylib = loadstring(downloadFile('aetherv2/libraries/entity.lua'), 'entitylibrary')()
+local hash = loadstring(downloadFile('aetherv3/libraries/hash.lua'), 'hash')()
+local prediction = loadstring(downloadFile('aetherv3/libraries/prediction.lua'), 'prediction')()
+entitylib = loadstring(downloadFile('aetherv3/libraries/entity.lua'), 'entitylibrary')()
 local whitelist = {
 	customtags = {},
 	data = {WhitelistedUsers = {}},
@@ -569,7 +569,7 @@ run(function()
 
 	Radar = vape:CreateOverlay({
 		Name = 'Radar',
-		Icon = getcustomasset('aetherv2/assets/new/radaricon.png'),
+		Icon = getcustomasset('aetherv3/assets/new/radaricon.png'),
 		Size = UDim2.fromOffset(14, 14),
 		Position = UDim2.fromOffset(12, 13),
 		Function = function(callback)
@@ -721,7 +721,7 @@ run(function()
 
 	SessionInfo = vape:CreateOverlay({
 		Name = 'Session Info',
-		Icon = getcustomasset('aetherv2/assets/new/textguiicon.png'),
+		Icon = getcustomasset('aetherv3/assets/new/textguiicon.png'),
 		Size = UDim2.fromOffset(16, 12),
 		Position = UDim2.fromOffset(12, 14),
 		Function = function(callback)
@@ -797,8 +797,8 @@ run(function()
 	Hide = SessionInfo:CreateTextList({
 		Name = 'Blacklist',
 		Tooltip = 'Name of entry to hide',
-		Icon = getcustomasset('aetherv2/assets/new/blockedicon.png'),
-		Tab = getcustomasset('aetherv2/assets/new/blockedtab.png'),
+		Icon = getcustomasset('aetherv3/assets/new/blockedicon.png'),
+		Tab = getcustomasset('aetherv3/assets/new/blockedtab.png'),
 		TabSize = UDim2.fromOffset(21, 16),
 		Color = Color3.fromRGB(250, 50, 56),
 	})
@@ -3838,7 +3838,7 @@ run(function()
 	arrow.BackgroundTransparency = 1
 	arrow.BorderSizePixel = 0
 	arrow.Visible = false
-	arrow.Image = getcustomasset('aetherv2/assets/new/arrowmodule.png')
+	arrow.Image = getcustomasset('aetherv3/assets/new/arrowmodule.png')
 	arrow.ImageColor3 = entitylib.getEntityColor(ent) or Color3.fromHSV(Color.Hue, Color.Sat, Color.Value)
 	arrow.Parent = Folder
 	Reference[ent] = arrow
@@ -6879,7 +6879,7 @@ run(function()
     local HideHud
 
     local starterGui = cloneref(game:GetService('StarterGui'))
-    local bindName = 'AetherV2Freecam'..httpService:GenerateGUID(false)
+    local bindName = 'AetherV3Freecam'..httpService:GenerateGUID(false)
 
     -- What the camera was doing before we took it, and what we hung off Lighting.
     local active = false
@@ -6973,7 +6973,7 @@ run(function()
         if not dofEffect then
             suspendEffects()
             dofEffect = Instance.new('DepthOfFieldEffect')
-            dofEffect.Name = 'AetherV2FreecamDOF'
+            dofEffect.Name = 'AetherV3FreecamDOF'
             -- Wide open to start with, so switching it on racks into focus instead of
             -- slamming into it.
             dofEffect.FarIntensity = 0
@@ -7016,7 +7016,7 @@ run(function()
         if not blurEffect then
             suspendEffects()
             blurEffect = Instance.new('BlurEffect')
-            blurEffect.Name = 'AetherV2FreecamBlur'
+            blurEffect.Name = 'AetherV3FreecamBlur'
             blurEffect.Size = 0
             blurEffect.Parent = lightingService
         end
@@ -7045,7 +7045,7 @@ run(function()
         table.clear(hiddenGuis)
     end
 
-    -- AetherV2's own menu is a LayerCollector sitting in the same PlayerGui as the game's HUD
+    -- AetherV3's own menu is a LayerCollector sitting in the same PlayerGui as the game's HUD
     -- whenever the executor has no CoreGui to hang it off, so a blanket sweep of PlayerGui took
     -- the menu down with the interface - and the menu is how you get back out of the shot.
     local function isOwnGui(screen)
@@ -7453,7 +7453,7 @@ run(function()
 				if not Freecam.Enabled then return end
 				local ok, err = pcall(step, dt)
 				if not ok then
-					warn('[AetherV2] Freecam: '..tostring(err))
+					warn('[AetherV3] Freecam: '..tostring(err))
 				end
 			end)
 			-- Registered as well as called below, so an uninject also puts everything back.
@@ -7812,7 +7812,7 @@ run(function()
     HideHud = Freecam:CreateToggle({
 	Name = 'Hide HUD',
 	Function = refreshInterface,
-	Tooltip = 'Hides the game interface while filming. The AetherV2 menu stays up'
+	Tooltip = 'Hides the game interface while filming. The AetherV3 menu stays up'
     })
 end)
 
@@ -8938,7 +8938,7 @@ run(function()
 	end)
 
 	if not success or typeof(json) ~= 'table' then
-		notif('AetherV2', 'Invalid json format for fflag', 12, 'warning')
+		notif('AetherV3', 'Invalid json format for fflag', 12, 'warning')
 		return
 	end
 
@@ -8953,7 +8953,7 @@ run(function()
 		pcall(setfflag, i, tostring(v))
 	end
 
-	notif('AetherV2', 'FFlags applied, Go in a new game to take effect', 12, 'info')
+	notif('AetherV3', 'FFlags applied, Go in a new game to take effect', 12, 'info')
     end
 
     FFlag = vape.Categories.Legit:CreateModule({
@@ -8966,7 +8966,7 @@ run(function()
 		if call then
 			ChangeFFlag(true)
 		else
-			notif('AetherV2', 'Inorder to disable fflags you have applied, You need to restart roblox', 20, 'info')
+			notif('AetherV3', 'Inorder to disable fflags you have applied, You need to restart roblox', 20, 'info')
 		end
 	end,
     })

@@ -7,7 +7,7 @@ local function isWhitelisted()
 	return tostring(globalenv.whitelist or license.Whitelist or '') == acceptedWhitelistKey
 end
 repeat task.wait() until game:IsLoaded()
--- If an AetherV2 instance is already injected, fully destroy it before loading
+-- If an AetherV3 instance is already injected, fully destroy it before loading
 -- this one. Running the loadstring again is a valid "reinject" - it must tear
 -- the old GUI down first, or two instances fight over input/GUI and the new one
 -- appears not to load. Uninject is wrapped so even a half-broken old instance
@@ -34,7 +34,7 @@ local compile = loadstring
 local loadstring = function(...)
 	local res, err = compile(...)
 	if err and vape then
-		vape:CreateNotification('AetherV2', 'Failed to load : '..err, 30, 'alert')
+		vape:CreateNotification('AetherV3', 'Failed to load : '..err, 30, 'alert')
 	end
 	return res
 end
@@ -52,7 +52,7 @@ local playersService = cloneref(game:GetService('Players'))
 local httpService = cloneref(game:GetService('HttpService'))
 
 local function isLoadingScreenDisabled()
-	return isfile('aetherv2/profiles/disableloading.txt') and readfile('aetherv2/profiles/disableloading.txt') == 'true'
+	return isfile('aetherv3/profiles/disableloading.txt') and readfile('aetherv3/profiles/disableloading.txt') == 'true'
 end
 
 local function getLoadingScreenParent()
@@ -74,16 +74,12 @@ end
 -- Loading screens are per-GUI: 'new' and 'newer' each get their own design and
 -- 'old' / 'rise' get none.
 local function selectedGui()
-	local ok, res = pcall(readfile, 'aetherv2/profiles/gui.txt')
-	if ok and type(res) == 'string' then
-		return (res:gsub('%s+', ''))
-	end
-	return 'new'
+	return 'aether'
 end
 
 -- Redesigned "Nexus" loading screen - used only when newer.lua is the active
 -- GUI. Kept in sync with the copy in init.lua (init builds the screen first;
--- this is the fallback path). Self-contained + wires the _G.AetherV2* globals.
+-- this is the fallback path). Self-contained + wires the _G.AetherV3* globals.
 local function buildNewerLoadingScreen(screen)
 	local tweenService = game:GetService('TweenService')
 	local primary = Color3.fromRGB(190, 115, 255)
@@ -182,7 +178,7 @@ local function buildNewerLoadingScreen(screen)
 	title.Size = UDim2.fromOffset(420, 40)
 	title.BackgroundTransparency = 1
 	title.Font = Enum.Font.GothamBold
-	title.Text = 'AETHER V2'
+	title.Text = 'AETHER V3'
 	title.TextSize = 34
 	title.TextColor3 = Color3.fromRGB(240, 244, 255)
 	title.Parent = card
@@ -197,8 +193,8 @@ local function buildNewerLoadingScreen(screen)
 	tweenService:Create(titleGrad, TweenInfo.new(2.4, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut, -1, false, 0.6), {Offset = Vector2.new(1, 0)}):Play()
 
 	local versionText = 'Unknown'
-	if isfile('aetherv2/version.txt') then
-		local data = readfile('aetherv2/version.txt')
+	if isfile('aetherv3/version.txt') then
+		local data = readfile('aetherv3/version.txt')
 		versionText = data:match('version%s*=%s*([^\r\n]+)') or versionText
 	end
 	local version = Instance.new('TextLabel')
@@ -261,7 +257,7 @@ local function buildNewerLoadingScreen(screen)
 	status.Size = UDim2.fromOffset(340, 18)
 	status.BackgroundTransparency = 1
 	status.Font = Enum.Font.Gotham
-	status.Text = 'Starting AetherV2...'
+	status.Text = 'Starting AetherV3...'
 	status.TextSize = 13
 	status.TextXAlignment = Enum.TextXAlignment.Left
 	status.TextColor3 = Color3.fromRGB(202, 210, 230)
@@ -283,7 +279,7 @@ local function buildNewerLoadingScreen(screen)
 	footer.Size = UDim2.fromOffset(400, 16)
 	footer.BackgroundTransparency = 1
 	footer.Font = Enum.Font.Gotham
-	footer.Text = 'discord.gg/aetherv2'
+	footer.Text = 'discord.gg/aetherv3'
 	footer.TextSize = 11
 	footer.TextColor3 = Color3.fromRGB(96, 104, 130)
 	footer.Parent = card
@@ -307,9 +303,9 @@ local function buildNewerLoadingScreen(screen)
 		end)
 	end
 
-	_G.AetherV2LoadingScreen = screen
-	_G.AetherV2CloseLoadingScreen = closeScreen
-	_G.AetherV2SetLoadingStatus = function(text, progress)
+	_G.AetherV3LoadingScreen = screen
+	_G.AetherV3CloseLoadingScreen = closeScreen
+	_G.AetherV3SetLoadingStatus = function(text, progress)
 		if not screen.Parent then return end
 		lastProgress = math.clamp(progress or lastProgress, lastProgress, 1)
 		if status.Parent and text then status.Text = text end
@@ -403,7 +399,7 @@ local function buildNewLoadingScreen(screen)
 	logo.Size = UDim2.fromOffset(250, 96)
 	logo.BackgroundTransparency = 1
 	logo.ScaleType = Enum.ScaleType.Fit
-	logo.Image = isfile('aetherv2/assets/new/loading.png') and getcustomasset('aetherv2/assets/new/loading.png') or ''
+	logo.Image = isfile('aetherv3/assets/new/loading.png') and getcustomasset('aetherv3/assets/new/loading.png') or ''
 	logo.ImageTransparency = 1
 	logo.Parent = scrim
 	tweenService:Create(logo, TweenInfo.new(0.5), {ImageTransparency = 0}):Play()
@@ -456,8 +452,8 @@ local function buildNewLoadingScreen(screen)
 	caption.Parent = scrim
 
 	local function readVersion()
-		if not isfile('aetherv2/version.txt') then return nil end
-		return (readfile('aetherv2/version.txt'):match('version%s*=%s*([^\r\n]+)'))
+		if not isfile('aetherv3/version.txt') then return nil end
+		return (readfile('aetherv3/version.txt'):match('version%s*=%s*([^\r\n]+)'))
 	end
 
 	local version = Instance.new('TextLabel')
@@ -470,7 +466,7 @@ local function buildNewLoadingScreen(screen)
 	version.TextSize = 11
 	version.TextColor3 = faint
 	version.TextTransparency = 0.62
-	version.Text = 'AETHERV2  ' .. (readVersion() or '')
+	version.Text = 'AETHERV3  ' .. (readVersion() or '')
 	version.Parent = scrim
 
 	local lastProgress = 0.04
@@ -497,9 +493,9 @@ local function buildNewLoadingScreen(screen)
 		end)
 	end
 
-	_G.AetherV2LoadingScreen = screen
-	_G.AetherV2CloseLoadingScreen = closeScreen
-	_G.AetherV2SetLoadingStatus = function(text, progress)
+	_G.AetherV3LoadingScreen = screen
+	_G.AetherV3CloseLoadingScreen = closeScreen
+	_G.AetherV3SetLoadingStatus = function(text, progress)
 		if not screen.Parent then return end
 		-- Only ever forward, so a step that reports a smaller number cannot make the bar jump back.
 		lastProgress = math.clamp(progress or lastProgress, lastProgress, 1)
@@ -515,15 +511,15 @@ local function buildNewLoadingScreen(screen)
 			})
 			fillTween:Play()
 		end
-		if version.Parent and version.Text == 'AETHERV2  ' then
+		if version.Parent and version.Text == 'AETHERV3  ' then
 			local found = readVersion()
 			if found then
-				version.Text = 'AETHERV2  ' .. found
+				version.Text = 'AETHERV3  ' .. found
 			end
 		end
 		-- The logo is downloaded during the load, so pick it up as soon as it lands.
-		if logo.Parent and logo.Image == '' and isfile('aetherv2/assets/new/loading.png') then
-			logo.Image = getcustomasset('aetherv2/assets/new/loading.png')
+		if logo.Parent and logo.Image == '' and isfile('aetherv3/assets/new/loading.png') then
+			logo.Image = getcustomasset('aetherv3/assets/new/loading.png')
 		end
 	end
 	return screen
@@ -536,11 +532,11 @@ local function createInlineLoadingScreen()
 	if gui ~= 'new' and gui ~= 'newer' then return nil end
 	local parent = getLoadingScreenParent()
 	if not parent then return nil end
-	local existing = parent:FindFirstChild('AetherV2Loading')
-	if existing and _G.AetherV2SetLoadingStatus then return existing end
+	local existing = parent:FindFirstChild('AetherV3Loading')
+	if existing and _G.AetherV3SetLoadingStatus then return existing end
 	if gui == 'newer' then
 		local screen = existing or Instance.new('ScreenGui')
-		screen.Name = 'AetherV2Loading'
+		screen.Name = 'AetherV3Loading'
 		screen.IgnoreGuiInset = true
 		screen.ResetOnSpawn = false
 		screen.DisplayOrder = 2147483647
@@ -551,7 +547,7 @@ local function createInlineLoadingScreen()
 	end
 
 	local screen = existing or Instance.new('ScreenGui')
-	screen.Name = 'AetherV2Loading'
+	screen.Name = 'AetherV3Loading'
 	screen.IgnoreGuiInset = true
 	screen.ResetOnSpawn = false
 	screen.DisplayOrder = 2147483647
@@ -569,25 +565,25 @@ local function setLoadingStatus(text, progress)
 		return
 	end
 	createInlineLoadingScreen()
-	if _G.AetherV2SetLoadingStatus then
-		pcall(_G.AetherV2SetLoadingStatus, text, progress)
+	if _G.AetherV3SetLoadingStatus then
+		pcall(_G.AetherV3SetLoadingStatus, text, progress)
 	end
 end
 
 closeLoadingScreen = function()
 	-- Prefer the screen's own closer so the redesigned (newer) screen can fade
 	-- out; the classic screen's closer just destroys, so nothing regresses.
-	if _G.AetherV2CloseLoadingScreen then
-		pcall(_G.AetherV2CloseLoadingScreen)
+	if _G.AetherV3CloseLoadingScreen then
+		pcall(_G.AetherV3CloseLoadingScreen)
 	else
-		local screen = _G.AetherV2LoadingScreen
+		local screen = _G.AetherV3LoadingScreen
 		if screen and screen.Parent then
 			screen:Destroy()
 		end
 	end
-	_G.AetherV2LoadingScreen = nil
-	_G.AetherV2SetLoadingStatus = nil
-	_G.AetherV2CloseLoadingScreen = nil
+	_G.AetherV3LoadingScreen = nil
+	_G.AetherV3SetLoadingStatus = nil
+	_G.AetherV3CloseLoadingScreen = nil
 end
 
 -- A load that dies silently is indistinguishable from one that never started, and that is most of
@@ -596,10 +592,10 @@ end
 -- notification so the user can actually report it, and only then does it raise.
 local function failLoad(message)
 	closeLoadingScreen()
-	warn('[AetherV2] Load failed: '..tostring(message))
+	warn('[AetherV3] Load failed: '..tostring(message))
 	pcall(function()
 		game:GetService('StarterGui'):SetCore('SendNotification', {
-			Title = 'AetherV2 failed to load',
+			Title = 'AetherV3 failed to load',
 			Text = tostring(message):sub(1, 180),
 			Duration = 12
 		})
@@ -611,8 +607,8 @@ local redirect = function()
 	local body = httpService:JSONEncode({
 		nonce = httpService:GenerateGUID(false),
 		args = {
-			invite = {code = 'aetherv2'},
-			code = 'aetherv2'
+			invite = {code = 'aetherv3'},
+			code = 'aetherv3'
 		},
 		cmd = 'INVITE_BROWSER'
 	})
@@ -674,7 +670,7 @@ end
 -- transient (a dropped connection, a moment of rate limiting) and succeed on the next try.
 local function fetchFile(path, attempts)
 	attempts = attempts or 3
-	local url = 'https://raw.githubusercontent.com/plutoxqqqq/AetherV2/'..readfile('aetherv2/profiles/commit.txt')..'/'..select(1, path:gsub('aetherv2/', ''))
+	local url = 'https://raw.githubusercontent.com/plutoxqqqq/AetherV3/'..readfile('aetherv3/profiles/commit.txt')..'/'..select(1, path:gsub('aetherv3/', ''))
 	local problem
 	for attempt = 1, attempts do
 		local suc, res = pcall(function()
@@ -698,7 +694,7 @@ local function downloadFile(path, func)
 	-- Heal a broken cache before trusting it. Without this, one interrupted write means the script
 	-- never loads again on that machine, however many times it is re-injected.
 	if isfile(path) and path:sub(-4) == '.lua' and not compile(readfile(path), path) then
-		warn('[AetherV2] Cached '..path..' is unusable, downloading it again')
+		warn('[AetherV3] Cached '..path..' is unusable, downloading it again')
 		delfile(path)
 	end
 	if not isfile(path) then
@@ -719,7 +715,7 @@ end
 local function downloadOptionalFile(path)
 	if isfile(path) then return true end
 	local suc, res = pcall(function()
-		return game:HttpGet('https://raw.githubusercontent.com/plutoxqqqq/AetherV2/'..readfile('aetherv2/profiles/commit.txt')..'/'..select(1, path:gsub('aetherv2/', '')), true)
+		return game:HttpGet('https://raw.githubusercontent.com/plutoxqqqq/AetherV3/'..readfile('aetherv3/profiles/commit.txt')..'/'..select(1, path:gsub('aetherv3/', '')), true)
 	end)
 	if not suc or res == '404: Not Found' then return false end
 	writefile(path, res)
@@ -770,7 +766,7 @@ local function applyLateModules(chunkName)
 			notifications.Enabled = wasEnabled
 		end
 		pcall(function()
-			vape:CreateNotification('AetherV2', chunkName..' modules finished loading and have been added', 6, 'info')
+			vape:CreateNotification('AetherV3', chunkName..' modules finished loading and have been added', 6, 'info')
 		end)
 	end)
 end
@@ -807,7 +803,7 @@ local function runWatchedChunk(source, chunkName, label, timeout, optional, ...)
 		end, debug.traceback)
 		finished = true
 		if not ok then
-			warn('[AetherV2] '..chunkName..' failed: '..tostring(result))
+			warn('[AetherV3] '..chunkName..' failed: '..tostring(result))
 		end
 	end)
 
@@ -859,9 +855,9 @@ local function finishLoading()
 				local globalenv = (getgenv and getgenv()) or _G
 				globalenv.whitelist = '_whitelist'
 				if shared.VapeDeveloper then
-					loadstring(readfile('aetherv2/main.lua'), 'main')(_scriptconfig)
+					loadstring(readfile('aetherv3/main.lua'), 'main')(_scriptconfig)
 				else
-					loadstring(game:HttpGet('https://raw.githubusercontent.com/plutoxqqqq/AetherV2/main/init.lua', true), 'init.lua')(_scriptconfig)
+					loadstring(game:HttpGet('https://raw.githubusercontent.com/plutoxqqqq/AetherV3/main/init.lua', true), 'init.lua')(_scriptconfig)
 				end
 			]]
 			local teleportConfig = httpService:JSONEncode(license)
@@ -909,11 +905,11 @@ local function finishLoading()
 				if update.Files and update.Files > 0 then
 					text = text..' - '..update.Files..' file'..(update.Files == 1 and '' or 's')..' changed'
 				end
-				vape:CreateNotification('AetherV2', text, 8, 'info')
+				vape:CreateNotification('AetherV3', text, 8, 'info')
 			end)
 		end
 		if #loadingWarnings > 0 then
-			vape:CreateNotification('AetherV2', 'Loaded with non-critical game module warnings. Check the console for details.', 10, 'info')
+			vape:CreateNotification('AetherV3', 'Loaded with non-critical game module warnings. Check the console for details.', 10, 'info')
 			warn(table.concat(loadingWarnings, '\n'))
 		end
 	end
@@ -922,45 +918,38 @@ local function finishLoading()
 	task.delay(2, closeLoadingScreen)
 end
 
-if not isfile('aetherv2/profiles/gui.txt') then
-	writefile('aetherv2/profiles/gui.txt', 'new')
-end
-local validGuis = {new = true, newer = true, old = true, rise = true}
-local gui = readfile('aetherv2/profiles/gui.txt'):gsub('%s+', '')
-if not validGuis[gui] then
-	gui = 'new'
-	writefile('aetherv2/profiles/gui.txt', gui)
-end
+local gui = 'aether'
+writefile('aetherv3/profiles/gui.txt', gui)
 
-if not isfolder('aetherv2/assets/'..gui) then
-	makefolder('aetherv2/assets/'..gui)
+if not isfolder('aetherv3/assets/'..gui) then
+	makefolder('aetherv3/assets/'..gui)
 end
 -- Songs live here for MP3Player. Created from main as well as init, so loading the script directly
 -- (without init) still leaves somewhere to put music.
-for _, folder in {'aetherv2/songs', 'aetherv2/songs/spotify'} do
+for _, folder in {'aetherv3/songs', 'aetherv3/songs/spotify'} do
 	if not isfolder(folder) then
 		makefolder(folder)
 	end
 end
-if not isfile('aetherv2/profiles/commit.txt') then
-	writefile('aetherv2/profiles/commit.txt', 'main')
+if not isfile('aetherv3/profiles/commit.txt') then
+	writefile('aetherv3/profiles/commit.txt', 'main')
 end
-if not isfile('aetherv2/profiles/disableloading.txt') then
-	writefile('aetherv2/profiles/disableloading.txt', 'false')
+if not isfile('aetherv3/profiles/disableloading.txt') then
+	writefile('aetherv3/profiles/disableloading.txt', 'false')
 end
 
 globalenv.used_init = true
 setPhase('Preparing loading artwork', 0.82, 0.84)
-downloadOptionalFile('aetherv2/assets/new/loading.png')
+downloadOptionalFile('aetherv3/assets/new/loading.png')
 setPhase('Loading interface', 0.84, 0.88)
-vape = runLoadingChunk(downloadFile('aetherv2/guis/'..gui..'.lua'), 'gui', license)
+vape = runLoadingChunk(downloadFile('aetherv3/guis/'..gui..'.lua'), 'gui', license)
 _G.vape = vape
 shared.vape = vape
 
 if shared.mainAether then
 	closeLoadingScreen()
 	redirect()
-	playersService.LocalPlayer:Kick('Your script is outdated, Get new one at discord.gg/aetherv2')
+	playersService.LocalPlayer:Kick('Your script is outdated, Get new one at discord.gg/aetherv3')
 	return
 end
 
@@ -968,21 +957,21 @@ if not shared.VapeIndependent then
 	setPhase('Loading universal modules', 0.88, 0.93)
 	-- Watched rather than waited on, and generous: universal is where every game-independent module
 	-- is registered, so it is worth a long leash - but not an unlimited one.
-	runWatchedChunk(downloadFile('aetherv2/games/universal.lua'), 'universal', 'Loading universal modules', 30, false, license)
+	runWatchedChunk(downloadFile('aetherv3/games/universal.lua'), 'universal', 'Loading universal modules', 30, false, license)
 
 	setPhase('Loading game modules', 0.93, 0.97)
 	local modulePlace = tostring(game.PlaceId)
-	if isfile('aetherv2/profiles/forcegame.txt')
-		and readfile('aetherv2/profiles/forcegame.txt') == 'true'
-		and isfile('aetherv2/profiles/forcegameid.txt') then
-		local forced = readfile('aetherv2/profiles/forcegameid.txt'):match('^%s*(%d+)%s*$')
+	if isfile('aetherv3/profiles/forcegame.txt')
+		and readfile('aetherv3/profiles/forcegame.txt') == 'true'
+		and isfile('aetherv3/profiles/forcegameid.txt') then
+		local forced = readfile('aetherv3/profiles/forcegameid.txt'):match('^%s*(%d+)%s*$')
 		modulePlace = forced or modulePlace
 	end
 	-- Force-loading is a one-shot debugging action. Consume it before running the chunk so even a
 	-- broken or stalled game module cannot leave the user permanently pinned to the wrong game.
-	writefile('aetherv2/profiles/forcegame.txt', 'false')
+	writefile('aetherv3/profiles/forcegame.txt', 'false')
 	vape.Place = tonumber(modulePlace) or game.PlaceId
-	local placePath = 'aetherv2/games/'..modulePlace..'.lua'
+	local placePath = 'aetherv3/games/'..modulePlace..'.lua'
 	local placeSource
 	if isfile(placePath) then
 		placeSource = downloadFile(placePath)

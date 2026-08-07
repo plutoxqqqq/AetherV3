@@ -3,7 +3,7 @@
 local run = function(func)
 	local success, result = xpcall(func, debug and debug.traceback or tostring)
 	if not success then
-		warn('[AetherV2] Skipped a module during startup: '..tostring(result))
+		warn('[AetherV3] Skipped a module during startup: '..tostring(result))
 	end
 	return success
 end
@@ -1657,7 +1657,7 @@ run(function()
                         Size = UDim2.new(1, 89, 1, 52),
                         Position = UDim2.fromOffset(-48, -31),
                         BackgroundTransparency = 1,
-                        Image = getcustomasset('aetherv2/assets/new/blur.png'),
+                        Image = getcustomasset('aetherv3/assets/new/blur.png'),
                         ScaleType = Enum.ScaleType.Slice,
                         SliceCenter = Rect.new(52, 31, 261, 502)
                     }),

@@ -23,7 +23,7 @@ local run = function(func, timeout)
 		task.wait(0.2)
 	until tick() - started >= timeout
 
-	warn('[AetherV2] Skipped a BedWars module during startup: '..tostring(lastError))
+	warn('[AetherV3] Skipped a BedWars module during startup: '..tostring(lastError))
 end
 local cloneref = cloneref or function(obj)
 	return obj
@@ -84,7 +84,7 @@ local getcustomasset = vape.Libraries.getcustomasset
 local function downloadFile(path, func)
 	if not isfile(path) then
 		local suc, res = pcall(function()
-			return game:HttpGet('https://raw.githubusercontent.com/plutoxqqqq/AetherV2/'..readfile('aetherv2/profiles/commit.txt')..'/'..select(1, path:gsub('aetherv2/', '')), true)
+			return game:HttpGet('https://raw.githubusercontent.com/plutoxqqqq/AetherV3/'..readfile('aetherv3/profiles/commit.txt')..'/'..select(1, path:gsub('aetherv3/', '')), true)
 		end)
 		if not suc or res == '404: Not Found' then
 			error(res)
@@ -158,7 +158,7 @@ local function addBlur(parent)
 	blur.Size = UDim2.new(1, 89, 1, 52)
 	blur.Position = UDim2.fromOffset(-48, -31)
 	blur.BackgroundTransparency = 1
-	blur.Image = getcustomasset('aetherv2/assets/new/blur.png')
+	blur.Image = getcustomasset('aetherv3/assets/new/blur.png')
 	blur.ScaleType = Enum.ScaleType.Slice
 	blur.SliceCenter = Rect.new(52, 31, 261, 502)
 	blur.Parent = parent
@@ -890,7 +890,7 @@ shared.gg = {}
 run(function()
 	canDebug = not table.find({'Solara', 'Xeno'}, ({identifyexecutor()})[1]) and true or false
 	if not canDebug then
-		local cheatenginelib = loadstring(downloadFile('aetherv2/libraries/cheatenginelib.lua'), 'cheatenginelib')(vape, vapeEvents, entitylib)
+		local cheatenginelib = loadstring(downloadFile('aetherv3/libraries/cheatenginelib.lua'), 'cheatenginelib')(vape, vapeEvents, entitylib)
 		require = function(v)
 			return cheatenginelib[({v:GetFullName():gsub(lplr.Name, 'PlayerTemplate')})[1]]:await()
 		end
@@ -931,7 +931,7 @@ run(function()
 		if not debug.getupvalue(Knit.Start, 1) then
 			-- This executor's debug library cannot read it. Everything that needs it is already
 			-- behind a canDebug check with a fallback, so carry on without rather than hang.
-			warn('[AetherV2] debug.getupvalue is unavailable here - modules that need it are disabled')
+			warn('[AetherV3] debug.getupvalue is unavailable here - modules that need it are disabled')
 			canDebug = false
 		end
 	end
@@ -1197,7 +1197,7 @@ run(function()
 		WarlockTarget = canDebug and getproto(Knit.Controllers.WarlockStaffController.KnitStart, 2) or function() end
 	}
 
-	local packages = httpService:JSONDecode(downloadFile('aetherv2/profiles/packages.json'))
+	local packages = httpService:JSONDecode(downloadFile('aetherv3/profiles/packages.json'))
 	local function dumpRemote(tab)
 		if not tab then return '' end
 		local ind
@@ -1216,7 +1216,7 @@ run(function()
 			remote = packages.remotes[i]
 		end
 		if remote == '' then
-			notif('AetherV2', 'Failed to grab remote ('..i..')', 10, 'alert')
+			notif('AetherV3', 'Failed to grab remote ('..i..')', 10, 'alert')
 		end
 		remotes[i] = remote
 	end
@@ -7512,7 +7512,7 @@ run(function()
         end)
         if not ok and not flagsBroken then
             flagsBroken = true
-            warn('[AetherV2] InfiniteFly: this executor has no usable setfflag, so the lag window cannot be opened')
+            warn('[AetherV3] InfiniteFly: this executor has no usable setfflag, so the lag window cannot be opened')
         end
     end
 
@@ -7575,7 +7575,7 @@ run(function()
                             local ok, err = pcall(cycle)
                             if not ok then
                                 setLag(false)
-                                warn('[AetherV2] InfiniteFly: '..tostring(err))
+                                warn('[AetherV3] InfiniteFly: '..tostring(err))
                             end
                         end
                     end
@@ -13995,7 +13995,7 @@ end)
     Utility
 ]]
 
--- MP3Player: plays your own .mp3 files out of the aetherv2/songs folder the loader creates.
+-- MP3Player: plays your own .mp3 files out of the aetherv3/songs folder the loader creates.
 --
 -- The folder is scanned live, so songs added or deleted while you are in a game are picked up
 -- without a reinject (Auto refresh, plus a Refresh button for right now). Anything the executor
@@ -14020,8 +14020,8 @@ run(function()
     local HUDTime
     local HUDColor
 
-    local SONGS = 'aetherv2/songs'
-    local SPOTIFY = 'aetherv2/songs/spotify'
+    local SONGS = 'aetherv3/songs'
+    local SPOTIFY = 'aetherv3/songs/spotify'
 
     local sound
     local tracks, index = {}, 0
@@ -14348,7 +14348,7 @@ run(function()
                 refreshHUD()
             end
         end,
-        Tooltip = 'Plays your own mp3 files from the aetherv2/songs folder, with a HUD and a live-refreshing playlist',
+        Tooltip = 'Plays your own mp3 files from the aetherv3/songs folder, with a HUD and a live-refreshing playlist',
         Size = UDim2.fromOffset(236, 66),
         ExtraText = function()
             local track = tracks[index]
@@ -15948,7 +15948,7 @@ run(function()
 				local ok, err = pcall(pass)
 				if not ok and not reported then
 					reported = true
-					warn('[AetherV2] AutoShoot: '..tostring(err))
+					warn('[AetherV3] AutoShoot: '..tostring(err))
 				end
 				task.wait(0.1)
 			until not AutoShoot.Enabled
@@ -17543,7 +17543,7 @@ run(function()
                 for name, event in Events do
                     local ok, err = pcall(event)
                     if not ok then
-                        warn('[AetherV2] CheatDetector '..name..': '..tostring(err))
+                        warn('[AetherV3] CheatDetector '..name..': '..tostring(err))
                     end
                 end
 
@@ -17553,7 +17553,7 @@ run(function()
                     if ok and type(fn) == 'function' then
                         running[name] = fn
                     else
-                        warn('[AetherV2] CheatDetector '..name..': '..tostring(fn))
+                        warn('[AetherV3] CheatDetector '..name..': '..tostring(fn))
                     end
                 end
 
@@ -17586,7 +17586,7 @@ run(function()
                                 if not wanted(name) then continue end
                                 local ok, err = pcall(fn, now, list, delta)
                                 if not ok then
-                                    warn('[AetherV2] CheatDetector '..name..': '..tostring(err))
+                                    warn('[AetherV3] CheatDetector '..name..': '..tostring(err))
                                 end
                             end
                         end
@@ -18506,7 +18506,7 @@ run(function()
     -- this file. The queue we want after a match therefore has to be handed over on disk; the
     -- lobby's AutoQueue module reads exactly this file.
     local LOBBY_PLACE = 6872265039
-    local STATE_FILE = 'aetherv2/profiles/autowin.json'
+    local STATE_FILE = 'aetherv3/profiles/autowin.json'
 
     -- Blocks sit on a 3-stud grid. A cell's centre is cell * 3, and standing on that cell puts
     -- your feet 1.5 studs above the centre. Every routing decision below is in whole cells.
@@ -20883,7 +20883,7 @@ run(function()
                 -- a genuinely broken build will show up as the watchdog resetting instead.
                 failures = failures + 1
                 if failures <= 3 then
-                    warn('[AetherV2] AutoWin tick failed: ' .. tostring(err))
+                    warn('[AetherV3] AutoWin tick failed: ' .. tostring(err))
                 end
                 if failures > 3 then task.wait(1) end
             end
@@ -25547,7 +25547,7 @@ run(function()
                                 -- everything else on the list still gets its turn.
                                 local ok, bought = pcall(callback, currencytable, shop, upgrades)
                                 if not ok then
-                                    warn('[AetherV2] AutoBuy: '..tostring(bought))
+                                    warn('[AetherV3] AutoBuy: '..tostring(bought))
                                 elseif bought then
                                     waitcheck = true
                                 end
@@ -26010,7 +26010,7 @@ run(function()
         close.Position = UDim2.new(1, -35, 0, 9)
         close.BackgroundColor3 = Color3.new(1, 1, 1)
         close.BackgroundTransparency = 1
-        close.Image = getcustomasset('aetherv2/assets/new/close.png')
+        close.Image = getcustomasset('aetherv3/assets/new/close.png')
         close.ImageColor3 = color.Light(uipallet.Text, 0.2)
         close.ImageTransparency = 0.5
         close.AutoButtonColor = false
@@ -26124,7 +26124,7 @@ run(function()
         searchicon.Size = UDim2.fromOffset(14, 14)
         searchicon.Position = UDim2.new(1, -26, 0, 8)
         searchicon.BackgroundTransparency = 1
-        searchicon.Image = getcustomasset('aetherv2/assets/new/search.png')
+        searchicon.Image = getcustomasset('aetherv3/assets/new/search.png')
         searchicon.ImageColor3 = color.Light(uipallet.Main, 0.37)
         searchicon.Parent = searchbkg
         local children = Instance.new('ScrollingFrame')
@@ -26265,7 +26265,7 @@ run(function()
         textbuttonicon.Position = UDim2.fromScale(0.5, 0.5)
         textbuttonicon.AnchorPoint = Vector2.new(0.5, 0.5)
         textbuttonicon.BackgroundTransparency = 1
-        textbuttonicon.Image = getcustomasset('aetherv2/assets/new/add.png')
+        textbuttonicon.Image = getcustomasset('aetherv3/assets/new/add.png')
         textbuttonicon.ImageColor3 = Color3.fromHSV(0.46, 0.96, 0.52)
         textbuttonicon.Parent = textbutton
         local childrenlist = Instance.new('Frame')
@@ -26358,7 +26358,7 @@ run(function()
             close.Position = UDim2.new(1, -23, 0, 6)
             close.BackgroundColor3 = Color3.new(1, 1, 1)
             close.BackgroundTransparency = 1
-            close.Image = getcustomasset('aetherv2/assets/new/closemini.png')
+            close.Image = getcustomasset('aetherv3/assets/new/closemini.png')
             close.ImageColor3 = color.Light(uipallet.Text, 0.2)
             close.ImageTransparency = 0.5
             close.AutoButtonColor = false
@@ -27230,7 +27230,7 @@ run(function()
                         Size = UDim2.new(1, 89, 1, 52),
                         Position = UDim2.fromOffset(-48, -31),
                         BackgroundTransparency = 1,
-                        Image = getcustomasset('aetherv2/assets/new/blur.png'),
+                        Image = getcustomasset('aetherv3/assets/new/blur.png'),
                         ScaleType = Enum.ScaleType.Slice,
                         SliceCenter = Rect.new(52, 31, 261, 502)
                     }),

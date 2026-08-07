@@ -3,7 +3,7 @@
 local run = function(func)
 	local success, result = xpcall(func, debug and debug.traceback or tostring)
 	if not success then
-		warn('[AetherV2] Skipped a module during startup: '..tostring(result))
+		warn('[AetherV3] Skipped a module during startup: '..tostring(result))
 	end
 	return success
 end
@@ -2210,7 +2210,7 @@ run(function()
     local Delay
     local Notify
 
-    local STATE_FILE = 'aetherv2/profiles/autowin.json'
+    local STATE_FILE = 'aetherv3/profiles/autowin.json'
 
     local function readState()
         if not isfile or not isfile(STATE_FILE) then return nil end
